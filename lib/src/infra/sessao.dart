@@ -16,6 +16,8 @@ class Sessao {
 
   // objeto de erro estático que armazena o último erro ocorrido na aplicação
   static RetornoJsonErro? objetoJsonErro;
+  static late String
+      retornoJsonLookup; // será usado para popular a grid da janela de lookup
 
   static String caminhoBancoDados = '';
   static late AppDb db;

@@ -33,10 +33,14 @@ OTHER DEALINGS IN THE SOFTWARE.
 @author Rivaldo Roberto (rivaldo.roberto@outlook.com)                    
 @version 1.0.0
 *******************************************************************************/
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:catcher/catcher.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart' hide Key;
 import 'package:flutter/foundation.dart' hide Key;
 import 'package:intl/intl.dart';
-import 'package:manutencao_usc/src/infra/infra.dart';
+
+import './../infra/infra.dart';
 
 class Constantes {
   /// singleton
@@ -46,15 +50,23 @@ class Constantes {
   }
   static Constantes? _this;
   Constantes._() : super();
+  static String chave =
+      '#Sua-Chave-de-32-caracteres-aqui'; // #Sua-Chave-de-32-caracteres-aqui tem que alterar para produção e gerar os valores do ENV com a chave correta
 
   static const String versaoApp = 'versão 1.0.0 - Janeiro/2023';
+  static Key key = Key.fromUtf8(Constantes.chave);
+  static IV iv = IV.fromUtf8('#Seu-Vetor-aqui#');
+
+  static Encrypter encrypter =
+      Encrypter(AES(key, mode: AESMode.ctr, padding: null));
 
   static var primaryColor = Colors.indigo[900]; //Color(0xFF2A2D3E);
   static final secondaryColor = Colors.amber[900];
   static final secondaryColorOme = Colors.amber[600];
   static const secondaryColor1 = Color.fromARGB(255, 62, 67, 92);
   static const bgColor = Color(0xFF212332);
-  static const btnPrimary = Colors.blueGrey;
+  static var btnPrimary = Colors.amber[900];
+  static var btnSecondary = Colors.indigo[900];
 
   static const primaryColorError = Colors.red;
   static final btnPrimaryOverlay = Colors.blueGrey[700];
@@ -250,6 +262,106 @@ class Constantes {
 
 // #endregion Imagens
 
-// #region Catcher
+  static String? sentryDns =
+      'https://c67d0e5e589a48c2b85e2946e8ac56e1@o4504571542437888.ingest.sentry.io/4504571681767424';
+
+  // #region Catcher
   ///configuração para tratar erros em modo de debug (desenvolvimento)
+  static CatcherOptions debugOptionsDialogo = CatcherOptions(
+    DialogReportMode(),
+    [
+      SentryHandler(
+        SentryClient(SentryOptions(dsn: sentryDns)),
+      ),
+      ConsoleHandler()
+    ],
+    localizationOptions: [
+      LocalizationOptions.buildDefaultPortugueseOptions(),
+    ],
+    customParameters: {"versao-atual": versaoApp},
+  );
+
+  ///configuração para tratar erros em modo de release (produção)
+  static CatcherOptions releaseOptionsDialogo = CatcherOptions(
+    DialogReportMode(),
+    [
+      SentryHandler(
+        SentryClient(SentryOptions(dsn: sentryDns)),
+      ),
+      ConsoleHandler(),
+    ],
+    localizationOptions: [
+      LocalizationOptions.buildDefaultPortugueseOptions(),
+    ],
+    customParameters: {"versao-atual": versaoApp},
+  );
+
+  ///configuração para tratar erros em modo de debug (desenvolvimento) - modo silencioso
+  static CatcherOptions debugOptionsSilencioso = CatcherOptions(
+    SilentReportMode(),
+    [
+      SentryHandler(
+        SentryClient(SentryOptions(dsn: sentryDns)),
+      ),
+      ConsoleHandler()
+    ],
+    localizationOptions: [
+      LocalizationOptions.buildDefaultPortugueseOptions(),
+    ],
+    customParameters: {"versao-atual": versaoApp},
+  );
+
+  ///configuração para tratar erros em modo de release (produção) - modo silencioso
+  static CatcherOptions releaseOptionsSilencioso = CatcherOptions(
+    DialogReportMode(),
+    [
+      SentryHandler(
+        SentryClient(SentryOptions(dsn: sentryDns)),
+      ),
+      ConsoleHandler(),
+    ],
+    localizationOptions: [
+      LocalizationOptions.buildDefaultPortugueseOptions(),
+    ],
+    customParameters: {"versao-atual": versaoApp},
+  );
+
+  ///configuração para tratar erros em modo de debug (desenvolvimento) - modo página
+  static CatcherOptions debugOptionsPagina = CatcherOptions(
+    PageReportMode(),
+    [
+      SentryHandler(
+        SentryClient(SentryOptions(dsn: sentryDns)),
+      ),
+      ConsoleHandler()
+    ],
+    localizationOptions: [
+      LocalizationOptions.buildDefaultPortugueseOptions(),
+    ],
+    customParameters: {"versao-atual": versaoApp},
+  );
+
+  ///configuração para tratar erros em modo de release (produção) - modo página
+  static CatcherOptions releaseOptionsPagina = CatcherOptions(
+    ///Vai mostrar o erro numa página
+    PageReportMode(),
+
+    ///Vai mostrar o erro numa página
+    // PageReportMode(showStackTrace: true),
+    [
+      //Manda os erros para o Sentry
+      SentryHandler(
+        SentryClient(SentryOptions(dsn: sentryDns)),
+      ),
+
+      ///Imprime os erros no Console
+      ConsoleHandler(),
+    ],
+    localizationOptions: [
+      LocalizationOptions.buildDefaultPortugueseOptions(),
+    ],
+    customParameters: {"versao-atual": versaoApp},
+  );
+
+// #endregion Catcher
 }

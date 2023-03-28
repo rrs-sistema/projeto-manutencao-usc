@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:backdrop/backdrop.dart';
 import 'package:flutter/gestures.dart';
 import 'package:intl/intl.dart';
-import 'package:manutencao_usc/src/database/dao/dao.dart';
-import 'package:manutencao_usc/src/database/tabelas/ordem_servico.dart';
-import 'package:manutencao_usc/src/infra/sessao.dart';
-import 'package:manutencao_usc/src/view/shared/page/filtro_page.dart';
+import 'package:manutencao_usc/src/view/ordem_servico/ordem_servico_persiste_page.dart';
 
-import './../../view/shared/caixas_de_dialogo.dart';
-import './../../view/shared/gradiente_app.dart';
-import './../../view/shared/view_util_lib.dart';
-import './../../view/shared/widgets_caixa.dart';
-import './../../view/shared/widgets_input.dart';
-import './../../infra/atalhos_desktop_web.dart';
-import './../../database/app_db.dart';
-import './../../infra/infra.dart';
-import './../../model/model.dart';
+import '../../database/tabelas/ordem_servico.dart';
+import '../shared/caixas_de_dialogo.dart';
+import '../shared/page/filtro_page.dart';
+import '../shared/gradiente_app.dart';
+import '../shared/view_util_lib.dart';
+import '../shared/widgets_caixa.dart';
+import '../shared/widgets_input.dart';
+import '../../infra/atalhos_desktop_web.dart';
+import '../../database/dao/dao.dart';
+import '../../database/app_db.dart';
+import '../../infra/sessao.dart';
+import '../../infra/infra.dart';
+import '../../model/model.dart';
 
 class OrdenServicoListaPage extends StatefulWidget {
   const OrdenServicoListaPage({Key? key}) : super(key: key);
@@ -34,10 +36,11 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
 
   DateTime _mesAno = DateTime.now();
   String? _statusOrdensServico = 'Todos';
-  double _totalPagar = 45;
-  double _totaPendente = 20;
-  double _totaAtendida = 25;
+  int _totalGeral = 0;
+  int _totaEmAndamento = 0;
+  int _totaFinalizada = 0;
   List<OrdemServicoMontada>? _listaOrdensServicoMontada;
+  final List<String> _listaStatus = ['Todos'];
 
   Map<LogicalKeySet, Intent>? _shortcutMap;
   Map<Type, Action<Intent>>? _actionMap;
@@ -59,6 +62,7 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
       controllerScroll.jumpTo(50.0);
     }
     WidgetsBinding.instance.addPostFrameCallback((_) => _refrescarTela());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _getStatus());
   }
 
   void _tratarAcoesAtalhos(AtalhoTelaIntent intent) {
@@ -140,8 +144,14 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
                   Expanded(
                     flex: 1,
                     child: InputDecorator(
-                      decoration: getInputDecoration('Mês/Ano Para o Filtro',
-                          'Mês/Ano Para o Filtro', true,
+                      decoration: getInputDecoration(
+                          Biblioteca.isDesktop()
+                              ? 'Mês/Ano para o filtro'
+                              : 'Mês/Ano',
+                          Biblioteca.isDesktop()
+                              ? 'Mês/Ano para o filtro'
+                              : 'Mês/Ano',
+                          true,
                           cor: Constantes.primaryColor,
                           labelStyleHint: const TextStyle(
                             color: Colors.white,
@@ -166,7 +176,13 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
                     flex: 1,
                     child: InputDecorator(
                       decoration: getInputDecoration(
-                          'Status da orderm', 'Status da orderm', true,
+                          Biblioteca.isDesktop()
+                              ? 'Status da ordem de serviço'
+                              : 'Status da O.S.',
+                          Biblioteca.isDesktop()
+                              ? 'Status da ordem de serviço'
+                              : 'Status da O.S.',
+                          true,
                           labelStyle: const TextStyle(
                             color: Colors.white,
                           ),
@@ -176,12 +192,7 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
                           (String? newValue) {
                         _statusOrdensServico = newValue;
                         _refrescarTela();
-                      }, <String>[
-                        'Todos',
-                        'Aberto',
-                        'Em andamento',
-                        'Pendente',
-                      ]),
+                      }, _listaStatus),
                     ),
                   ),
                 ],
@@ -273,6 +284,42 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
                                             ascending),
                                   ),
                                   DataColumn(
+                                    label: const Text('Usuário nome'),
+                                    tooltip: 'Quem abriu a ordem de serviço',
+                                    onSort: (int columnIndex, bool ascending) =>
+                                        _sort<String>(
+                                            (OrdemServicoMontada
+                                                    ordensServicoMontada) =>
+                                                ordensServicoMontada
+                                                    .usuario!.nome,
+                                            columnIndex,
+                                            ascending),
+                                  ),
+                                  DataColumn(
+                                    label: const Text('Usuário celular'),
+                                    tooltip: 'Celular do usuário',
+                                    onSort: (int columnIndex, bool ascending) =>
+                                        _sort<String>(
+                                            (OrdemServicoMontada
+                                                    ordensServicoMontada) =>
+                                                ordensServicoMontada
+                                                    .usuario!.celular,
+                                            columnIndex,
+                                            ascending),
+                                  ),
+                                  DataColumn(
+                                    label: const Text('Usuário email'),
+                                    tooltip: 'E-mail do usuário',
+                                    onSort: (int columnIndex, bool ascending) =>
+                                        _sort<String>(
+                                            (OrdemServicoMontada
+                                                    ordensServicoMontada) =>
+                                                ordensServicoMontada
+                                                    .usuario!.email,
+                                            columnIndex,
+                                            ascending),
+                                  ),
+                                  DataColumn(
                                     label: const Text('Descrição do problema'),
                                     tooltip: 'Descrição do problema apontado',
                                     onSort: (int columnIndex, bool ascending) =>
@@ -325,17 +372,17 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
               const SizedBox(height: 10.0),
               getItemResumoValor(
                 descricao: 'Total geral: ',
-                valor: Constantes.formatoDecimalValor.format(_totalPagar),
+                valor: '$_totalGeral',
                 corFundo: Colors.blue.shade100,
               ),
               getItemResumoValor(
                 descricao: 'Total Pendente: ',
-                valor: Constantes.formatoDecimalValor.format(_totaPendente),
+                valor: '$_totaEmAndamento',
                 corFundo: Colors.red.shade100,
               ),
               getItemResumoValor(
                 descricao: 'Total Atendida: ',
-                valor: Constantes.formatoDecimalValor.format(_totaAtendida),
+                valor: '$_totaFinalizada',
                 corFundo: Colors.green.shade100,
               ),
               const SizedBox(height: 10.0),
@@ -347,30 +394,19 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
   }
 
   void _inserir() {
-    showInSnackBar(
-        'Deve abrir a tela para cadastrar nova ordem de serviço',
-        corTexto: Colors.black,
-        corFundo: Colors.white,
-        context);
-    /*
     Navigator.of(context)
         .push(MaterialPageRoute(
-            builder: (BuildContext context) => ContasPagarPersistePage(
-                ordemServicoMontada: OrdemServicoMontada(
-                  fornecedor: Fornecedor(
-                    id: null,
-                  ),
-                  contasPagar: ContasPagar(
-                    id: null,
-                    dataVencimento: DateTime.now(),
-                  ),
-                ),
-                title: 'Contas a Pagar - Inserindo',
+            builder: (BuildContext context) => OrdemServicoPersistePage(
+                ordemServicoMontado: OrdemServicoMontada(
+                    ordemServico: OrdemServico(),
+                    categoria: Categoria(),
+                    local: Local(),
+                    statusOrdemServico: StatusOrdemServico()),
+                title: 'Ordem de Serviço - Inserindo',
                 operacao: 'I')))
         .then((_) async {
       await _refrescarTela();
     });
-    */
   }
 
   void _chamarFiltro() async {
@@ -410,18 +446,31 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
     setState(() {});
   }
 
+  Future _getStatus() async {
+    var listStatusOs = await Sessao.db.statusOrdemServicoDao.consultarLista();
+    for (var status in listStatusOs!) {
+      _listaStatus.add(status.nome!);
+    }
+    _atualizarTotais();
+    setState(() {});
+  }
+
   _atualizarTotais() {
-    _totalPagar = 0;
-    _totaPendente = 0;
-    _totaAtendida = 0;
+    if (_listaOrdensServicoMontada == null) return;
+    _totalGeral = _listaOrdensServicoMontada!.length;
+    _totaEmAndamento = 0;
+    _totaFinalizada = 0;
     for (OrdemServicoMontada ordemServicoMontada
         in _listaOrdensServicoMontada!) {
-      if (ordemServicoMontada.ordemServico!.codigoStatus == 0) {
-        _totalPagar = _totalPagar + 1;
-      } else if (ordemServicoMontada.ordemServico!.codigoStatus == 1) {
-        _totaPendente = _totaPendente + 1;
+      if (ordemServicoMontada.statusOrdemServico!.nome!
+          .toLowerCase()
+          .contains('andamento')) {
+        _totaEmAndamento = _totaEmAndamento + 1;
+      } else if (ordemServicoMontada.statusOrdemServico!.nome!
+          .toLowerCase()
+          .contains('finaliza')) {
+        _totaFinalizada = _totaFinalizada + 1;
       }
-      _totaAtendida = _totaAtendida + 1;
     }
   }
 }
@@ -467,22 +516,34 @@ class _OrdemServicoDataSource extends DataTableSource {
     if (index >= listaOrdensServico!.length) return null;
     OrdemServicoMontada ordemServicoMontado = listaOrdensServico![index];
     final OrdemServico ordemServico = ordemServicoMontado.ordemServico!;
+    final Usuario usuario = ordemServicoMontado.usuario!;
     return DataRow.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(ordemServicoMontado.statusOrdemServico!.nome), onTap: () {
+        DataCell(Text(ordemServicoMontado.statusOrdemServico!.nome ?? ''),
+            onTap: () {
           _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
         }),
-        DataCell(Text(ordemServicoMontado.categoria!.nome), onTap: () {
+        DataCell(Text(ordemServicoMontado.categoria!.nome ?? ''), onTap: () {
           _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
         }),
-        DataCell(Text(ordemServicoMontado.local!.nome), onTap: () {
+        DataCell(Text(ordemServicoMontado.local!.nome ?? ''), onTap: () {
           _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
         }),
         DataCell(
             Text(ordemServico.dataAbertura != null
                 ? DateFormat('dd/MM/yyyy').format(ordemServico.dataAbertura!)
                 : ''), onTap: () {
+          _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
+        }),
+        DataCell(Text(usuario.nome ?? ''), onTap: () {
+          _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
+        }),
+        DataCell(Text(UtilBrasilFields.obterTelefone(usuario.celular ?? '')),
+            onTap: () {
+          _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
+        }),
+        DataCell(Text(usuario.email ?? ''), onTap: () {
           _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
         }),
         DataCell(Text(ordemServico.descricaoProblema ?? ''), onTap: () {
@@ -507,20 +568,13 @@ class _OrdemServicoDataSource extends DataTableSource {
 
 void _detalharOdemServico(OrdemServicoMontada ordemServicoMontada,
     BuildContext context, Function refrescarTela) {
-  showInSnackBar(
-      'Deve abrir a tela de detalhe da ordem de serviço',
-      corTexto: Colors.black,
-      corFundo: Colors.white,
-      context);
-  /*
   Navigator.of(context)
       .push(MaterialPageRoute(
-          builder: (BuildContext context) => ContasPagarPersistePage(
-              ordemServicoMontada: ordemServicoMontada,
-              title: 'Contas a Pagar - Editando',
+          builder: (BuildContext context) => OrdemServicoPersistePage(
+              ordemServicoMontado: ordemServicoMontada,
+              title: 'Ordem de Serviço - Editando',
               operacao: 'A')))
       .then((_) async {
     await refrescarTela();
   });
-  */
 }

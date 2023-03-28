@@ -74,11 +74,21 @@ class Biblioteca {
     }
   }
 
-  static String formatarDataHora(DateTime? data) {
+  static String formatarDataHoraCompleto(DateTime? data) {
     if (data == null) {
       return '';
     } else {
       var formatter = DateFormat('dd/MM/yyyy HH:mm:ss');
+      String dataHoraFormatada = formatter.format(data);
+      return dataHoraFormatada;
+    }
+  }
+
+  static String formatarDataHora(DateTime? data) {
+    if (data == null) {
+      return '';
+    } else {
+      var formatter = DateFormat('dd/MM/yyyy HH:mm');
       String dataHoraFormatada = formatter.format(data);
       return dataHoraFormatada;
     }
@@ -248,6 +258,17 @@ class Biblioteca {
       valor = valor + dig.toString();
     }
     return valor.substring(valor.length - quantidadeDigitos, valor.length);
+  }
+
+  static String cifrar(String valor) {
+    return Constantes.encrypter.encrypt(valor, iv: Constantes.iv).base64;
+  }
+
+  static String decifrar(String valor) {
+    if (valor.substring(0, 1) == "\"") {
+      valor = valor.substring(1, valor.length - 1);
+    }
+    return Constantes.encrypter.decrypt64(valor, iv: Constantes.iv);
   }
 
   static String removeCaracteresEspeciais(String? pStr) {

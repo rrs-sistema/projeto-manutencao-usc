@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+
 import '../tabelas/status_ordem_servico.dart';
 import './../app_db.dart';
 
@@ -13,22 +14,26 @@ class StatusOrdemServicoDao extends DatabaseAccessor<AppDb>
 
   StatusOrdemServicoDao(this.db) : super(db);
 
-  Future<List<StatusOrdemServico>?> consultarLista() =>
-      select(statusOrdemServicos).get();
+  List<StatusOrdemServico>? listaStatus;
 
-  Future<int> ultimoId() async {
-    final resultado = await customSelect(
-            "select MAX(codigo) as ULTIMO from tb_status_ordem_servico")
-        .getSingleOrNull();
-    return resultado?.data["ULTIMO"] ?? 0;
+  Future<List<StatusOrdemServico>?> consultarLista() async {
+    listaStatus = await select(statusOrdemServicos).get();
+    return listaStatus;
+  }
+
+  Future<List<StatusOrdemServico>?> consultarListaFiltro(
+      String campo, String valor) async {
+    listaStatus = await (customSelect(
+        "SELECT * FROM tb_status_ordem_servico WHERE $campo like '%$valor%'",
+        readsFrom: {statusOrdemServicos}).map((row) {
+      return StatusOrdemServico.fromData(row.data);
+    }).get());
+    return listaStatus;
   }
 
   Future<int> inserir(StatusOrdemServico pObjeto) {
     return transaction(() async {
-      final maxId = await ultimoId();
-      pObjeto = pObjeto.copyWith(codigo: maxId + 1);
-      final idInserido = await into(statusOrdemServicos).insert(pObjeto);
-      return idInserido;
+      return await into(statusOrdemServicos).insert(pObjeto);
     });
   }
 
@@ -43,4 +48,14 @@ class StatusOrdemServicoDao extends DatabaseAccessor<AppDb>
       return delete(statusOrdemServicos).delete(pObjeto);
     });
   }
+
+  static List<String> campos = <String>[
+    'codigo',
+    'nome',
+  ];
+
+  static List<String> colunas = <String>[
+    'Código',
+    'nome',
+  ];
 }

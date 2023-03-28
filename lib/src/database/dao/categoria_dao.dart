@@ -13,21 +13,26 @@ class CategoriaDao extends DatabaseAccessor<AppDb> with _$CategoriaDaoMixin {
 
   CategoriaDao(this.db) : super(db);
 
-  Future<List<Categoria>?> consultarLista() => select(categorias).get();
+  List<Categoria>? listaCategoria;
 
-  Future<int> ultimoId() async {
-    final resultado =
-        await customSelect("select MAX(codigo) as ULTIMO from tb_categoria")
-            .getSingleOrNull();
-    return resultado?.data["ULTIMO"] ?? 0;
+  Future<List<Categoria>?> consultarLista() async {
+    listaCategoria = await select(categorias).get();
+    return listaCategoria;
+  }
+
+  Future<List<Categoria>?> consultarListaFiltro(
+      String campo, String valor) async {
+    listaCategoria = await (customSelect(
+        "SELECT * FROM tb_categoria WHERE $campo like '%$valor%'",
+        readsFrom: {categorias}).map((row) {
+      return Categoria.fromData(row.data);
+    }).get());
+    return listaCategoria;
   }
 
   Future<int> inserir(Categoria pObjeto) {
     return transaction(() async {
-      final maxId = await ultimoId();
-      pObjeto = pObjeto.copyWith(codigo: maxId + 1);
-      final idInserido = await into(categorias).insert(pObjeto);
-      return idInserido;
+      return await into(categorias).insert(pObjeto);
     });
   }
 
@@ -42,4 +47,14 @@ class CategoriaDao extends DatabaseAccessor<AppDb> with _$CategoriaDaoMixin {
       return delete(categorias).delete(pObjeto);
     });
   }
+
+  static List<String> campos = <String>[
+    'codigo',
+    'nome',
+  ];
+
+  static List<String> colunas = <String>[
+    'Código',
+    'nome',
+  ];
 }

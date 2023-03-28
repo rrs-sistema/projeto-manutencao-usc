@@ -1,4 +1,4 @@
-package com.example.manutencao_usc
+package com.projeto.usc.manutencao_usc
 
 import io.flutter.embedding.android.FlutterActivity
 

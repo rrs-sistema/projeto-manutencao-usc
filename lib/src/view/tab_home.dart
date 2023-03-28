@@ -1,16 +1,31 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import 'package:manutencao_usc/src/infra/infra.dart';
-import 'package:manutencao_usc/src/view/menu/menu_titulo_grupo_menu_interno.dart';
-import 'package:manutencao_usc/src/view/shared/caixas_de_dialogo.dart';
+import './../view/ordem_servico/ordem_servico_persiste_page.dart';
+import './../view/menu/menu_titulo_grupo_menu_interno.dart';
+import './../database/tabelas/ordem_servico.dart';
+import './../view/shared/custom_background.dart';
+import './../view/shared/gradiente_app.dart';
+import './../view/shared/profile_tile.dart';
+import './../database/app_db.dart';
+import './../infra/sessao.dart';
+import './../infra/infra.dart';
 
-import 'package:manutencao_usc/src/view/shared/custom_background.dart';
-import 'package:manutencao_usc/src/view/shared/gradiente_app.dart';
-import 'package:manutencao_usc/src/view/shared/profile_tile.dart';
-
-class TabHome extends StatelessWidget {
+class TabHome extends StatefulWidget {
   const TabHome({Key? key}) : super(key: key);
+
+  @override
+  State<TabHome> createState() => _TabHomeState();
+}
+
+class _TabHomeState extends State<TabHome> {
+  OrdemServico lastOrdeService = OrdemServico();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _getLastOrdeService());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +115,20 @@ class TabHome extends StatelessWidget {
                             elevation: 5,
                             child: InkWell(
                               onTap: () {
-                                showInSnackBar(
-                                    'Redirecionar para a tela de novo chamado',
-                                    corTexto: Colors.black,
-                                    context);
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        OrdemServicoPersistePage(
+                                            ordemServicoMontado:
+                                                OrdemServicoMontada(
+                                                    ordemServico:
+                                                        OrdemServico(),
+                                                    categoria: Categoria(),
+                                                    local: Local(),
+                                                    statusOrdemServico:
+                                                        StatusOrdemServico()),
+                                            title:
+                                                'Ordem de Serviço - Inserindo',
+                                            operacao: 'I')));
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -161,12 +186,27 @@ class TabHome extends StatelessWidget {
                                     color: Constantes.secondaryColor!)),
                             elevation: 5,
                             child: InkWell(
-                              onTap: () {
-                                showInSnackBar(
-                                    'Redirecionar para a tela do  ultimo chamado',
-                                    corTexto: Colors.black,
-                                    context);
-                              },
+                              onTap: lastOrdeService.codigo != null
+                                  ? () async {
+                                      var ordemServicoMontada = await Sessao
+                                          .db.ordemServicoDao
+                                          .consultarListaMontado(
+                                              codigo: lastOrdeService.codigo);
+
+                                      if (!mounted) return;
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  OrdemServicoPersistePage(
+                                                      ordemServicoMontado:
+                                                          ordemServicoMontada![
+                                                              0],
+                                                      title:
+                                                          'Ordem de Serviço - Editando',
+                                                      operacao: 'A')))
+                                          .then((_) async {});
+                                    }
+                                  : null,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -211,7 +251,7 @@ class TabHome extends StatelessWidget {
                                                       SizedBox(
                                                         height: 20.0,
                                                         child: Text(
-                                                            'Goteira dentro da sala 307',
+                                                            '${lastOrdeService.codigo != null ? lastOrdeService.descricaoProblema : 'Ainda não tem Ordem de Serviço'}',
                                                             softWrap: true,
                                                             overflow:
                                                                 TextOverflow
@@ -251,7 +291,13 @@ class TabHome extends StatelessWidget {
                                                                 left: 7,
                                                               ),
                                                               child: Text(
-                                                                  '21:45',
+                                                                  lastOrdeService
+                                                                              .codigo !=
+                                                                          null
+                                                                      ? Biblioteca.formatarDataHora(
+                                                                          lastOrdeService
+                                                                              .dataAbertura)
+                                                                      : 'XX:XX',
                                                                   style:
                                                                       TextStyle(
                                                                     color: Constantes
@@ -288,4 +334,9 @@ class TabHome extends StatelessWidget {
           ),
         ),
       );
+
+  Future _getLastOrdeService() async {
+    lastOrdeService = await Sessao.db.ordemServicoDao.pegaUltimaOrdemServico();
+    setState(() {});
+  }
 }

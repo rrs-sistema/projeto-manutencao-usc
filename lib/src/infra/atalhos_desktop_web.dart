@@ -79,6 +79,8 @@ class AtalhoTelaIntent extends Intent {
 
   const AtalhoTelaIntent.salvar() : type = AtalhoTelaType.salvar;
 
+  const AtalhoTelaIntent.escape() : type = AtalhoTelaType.escape;
+
   final AtalhoTelaType type;
 }
 
@@ -90,4 +92,5 @@ enum AtalhoTelaType {
   filtrar,
   salvar,
   cancelar,
+  escape,
 }

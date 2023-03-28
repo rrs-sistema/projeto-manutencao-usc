@@ -6,8 +6,13 @@ class OrdemServicos extends Table {
   @override
   String get tableName => 'tb_ordem_servico';
 
-  IntColumn get codigo => integer().autoIncrement().named('codigo')();
-  TextColumn get codigoUsuario => text().named('codigo_usuario')();
+  IntColumn get codigo =>
+      integer().autoIncrement().nullable().named('codigo')();
+  IntColumn get codigoUsuario => integer()
+      .named('codigo_usuario')
+      .nullable()
+      .customConstraint('NULLABLE REFERENCES tb_usuario(codigo)')();
+
   IntColumn get codigoCategoria => integer()
       .named('codigo_categoria')
       .nullable()
@@ -32,12 +37,14 @@ class OrdemServicos extends Table {
 
 class OrdemServicoMontada {
   OrdemServico? ordemServico;
+  Usuario? usuario;
   Categoria? categoria;
   Local? local;
   StatusOrdemServico? statusOrdemServico;
 
   OrdemServicoMontada({
     this.ordemServico,
+    this.usuario,
     this.categoria,
     this.local,
     this.statusOrdemServico,

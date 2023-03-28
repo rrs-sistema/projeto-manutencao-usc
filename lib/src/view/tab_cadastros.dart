@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'package:manutencao_usc/src/infra/infra.dart';
+import './../view/menu/menu_titulo_grupo_menu_interno.dart';
+import './../view/menu/menu_interno_botoes.dart';
+import './../view/shared/custom_background.dart';
+import './../view/shared/gradiente_app.dart';
+import './../view/shared/profile_tile.dart';
 
-import 'package:manutencao_usc/src/view/shared/custom_background.dart';
-import 'package:manutencao_usc/src/view/shared/gradiente_app.dart';
-import 'package:manutencao_usc/src/view/shared/profile_tile.dart';
-
-import 'package:manutencao_usc/src/view/menu/menu_interno_botoes.dart';
-import 'package:manutencao_usc/src/view/menu/menu_titulo_grupo_menu_interno.dart';
+import './../infra/infra.dart';
 
 class TabCadastros extends StatelessWidget {
   const TabCadastros({Key? key}) : super(key: key);
@@ -105,11 +104,15 @@ class TabCadastros extends StatelessWidget {
                         circleColor: Colors.teal,
                         rota: "/localLista"),
                     terceiroBotao: BotaoMenu(
+                        icon: FontAwesomeIcons.objectGroup,
+                        label: "SubLocal",
+                        circleColor: Colors.blueAccent,
+                        rota: "/localSubLista"),
+                    quartoBotao: BotaoMenu(
                         icon: FontAwesomeIcons.idBadge,
                         label: "Status",
                         circleColor: Colors.purple,
-                        rota: "/statusLista"),
-                    quartoBotao: null,
+                        rota: "/statusOrdemServicoLista"),
                   ),
                 ],
               ),

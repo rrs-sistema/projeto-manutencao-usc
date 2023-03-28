@@ -13,21 +13,25 @@ class LocalDao extends DatabaseAccessor<AppDb> with _$LocalDaoMixin {
 
   LocalDao(this.db) : super(db);
 
-  Future<List<Local>?> consultarLista() => select(locals).get();
+  List<Local>? listaLocal;
 
-  Future<int> ultimoId() async {
-    final resultado =
-        await customSelect("select MAX(codigo) as ULTIMO from tb_local")
-            .getSingleOrNull();
-    return resultado?.data["ULTIMO"] ?? 0;
+  Future<List<Local>?> consultarLista() async {
+    listaLocal = await select(locals).get();
+    return listaLocal;
+  }
+
+  Future<List<Local>?> consultarListaFiltro(String campo, String valor) async {
+    listaLocal = await (customSelect(
+        "SELECT * FROM tb_local WHERE $campo like '%$valor%'",
+        readsFrom: {locals}).map((row) {
+      return Local.fromData(row.data);
+    }).get());
+    return listaLocal;
   }
 
   Future<int> inserir(Local pObjeto) {
     return transaction(() async {
-      final maxId = await ultimoId();
-      pObjeto = pObjeto.copyWith(codigo: maxId + 1);
-      final idInserido = await into(locals).insert(pObjeto);
-      return idInserido;
+      return await into(locals).insert(pObjeto);
     });
   }
 
@@ -42,4 +46,14 @@ class LocalDao extends DatabaseAccessor<AppDb> with _$LocalDaoMixin {
       return delete(locals).delete(pObjeto);
     });
   }
+
+  static List<String> campos = <String>[
+    'codigo',
+    'nome',
+  ];
+
+  static List<String> colunas = <String>[
+    'Código',
+    'nome',
+  ];
 }

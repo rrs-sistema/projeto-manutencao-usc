@@ -1,7 +1,8 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:desktop_window/desktop_window.dart';
-import 'package:manutencao_usc/src/infra/sessao.dart';
+import 'package:catcher/catcher.dart';
+import './src/infra/sessao.dart';
 import './src/database/app_db.dart';
 import './src/view/home_page.dart';
 import './src/view/shared/custom_animation.dart';
@@ -31,7 +32,15 @@ void main() async {
     open.overrideFor(OperatingSystem.windows, _openOnWindows);
   }
 
-  runApp(const MyApp());
+  ///Inicia o Catcher e então inicia a aplicação.
+  ///O Catcher vai pegar e reportar os erros de forma global
+  Catcher(
+    runAppFunction: () {
+      runApp(const MyApp());
+    },
+    debugConfig: Constantes.debugOptionsPagina,
+    releaseConfig: Constantes.releaseOptionsPagina,
+  );
   configLoading();
 }
 
@@ -102,6 +111,7 @@ class MyAppState extends State<MyApp> {
 Widget _materialApp({bool? splash}) {
   return MaterialApp(
     scrollBehavior: MyCustomScrollBehavior(),
+    navigatorKey: Catcher.navigatorKey,
     localizationsDelegates: const [
       GlobalWidgetsLocalizations.delegate,
       GlobalMaterialLocalizations.delegate,

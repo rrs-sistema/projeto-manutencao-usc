@@ -8,8 +8,8 @@ part of 'app_db.dart';
 
 // ignore_for_file: type=lint
 class OrdemServico extends DataClass implements Insertable<OrdemServico> {
-  final int codigo;
-  final String codigoUsuario;
+  final int? codigo;
+  final int? codigoUsuario;
   final int? codigoCategoria;
   final int? codigoLocal;
   final int? codigoStatus;
@@ -18,8 +18,8 @@ class OrdemServico extends DataClass implements Insertable<OrdemServico> {
   final DateTime? dataAbertura;
   final DateTime? dataEncerramento;
   OrdemServico(
-      {required this.codigo,
-      required this.codigoUsuario,
+      {this.codigo,
+      this.codigoUsuario,
       this.codigoCategoria,
       this.codigoLocal,
       this.codigoStatus,
@@ -31,9 +31,9 @@ class OrdemServico extends DataClass implements Insertable<OrdemServico> {
     final effectivePrefix = prefix ?? '';
     return OrdemServico(
       codigo: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}codigo'])!,
-      codigoUsuario: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}codigo_usuario'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
+      codigoUsuario: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo_usuario']),
       codigoCategoria: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}codigo_categoria']),
       codigoLocal: const IntType()
@@ -53,8 +53,12 @@ class OrdemServico extends DataClass implements Insertable<OrdemServico> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['codigo'] = Variable<int>(codigo);
-    map['codigo_usuario'] = Variable<String>(codigoUsuario);
+    if (!nullToAbsent || codigo != null) {
+      map['codigo'] = Variable<int?>(codigo);
+    }
+    if (!nullToAbsent || codigoUsuario != null) {
+      map['codigo_usuario'] = Variable<int?>(codigoUsuario);
+    }
     if (!nullToAbsent || codigoCategoria != null) {
       map['codigo_categoria'] = Variable<int?>(codigoCategoria);
     }
@@ -81,8 +85,11 @@ class OrdemServico extends DataClass implements Insertable<OrdemServico> {
 
   OrdemServicosCompanion toCompanion(bool nullToAbsent) {
     return OrdemServicosCompanion(
-      codigo: Value(codigo),
-      codigoUsuario: Value(codigoUsuario),
+      codigo:
+          codigo == null && nullToAbsent ? const Value.absent() : Value(codigo),
+      codigoUsuario: codigoUsuario == null && nullToAbsent
+          ? const Value.absent()
+          : Value(codigoUsuario),
       codigoCategoria: codigoCategoria == null && nullToAbsent
           ? const Value.absent()
           : Value(codigoCategoria),
@@ -111,8 +118,8 @@ class OrdemServico extends DataClass implements Insertable<OrdemServico> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return OrdemServico(
-      codigo: serializer.fromJson<int>(json['codigo']),
-      codigoUsuario: serializer.fromJson<String>(json['codigoUsuario']),
+      codigo: serializer.fromJson<int?>(json['codigo']),
+      codigoUsuario: serializer.fromJson<int?>(json['codigoUsuario']),
       codigoCategoria: serializer.fromJson<int?>(json['codigoCategoria']),
       codigoLocal: serializer.fromJson<int?>(json['codigoLocal']),
       codigoStatus: serializer.fromJson<int?>(json['codigoStatus']),
@@ -128,8 +135,8 @@ class OrdemServico extends DataClass implements Insertable<OrdemServico> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'codigo': serializer.toJson<int>(codigo),
-      'codigoUsuario': serializer.toJson<String>(codigoUsuario),
+      'codigo': serializer.toJson<int?>(codigo),
+      'codigoUsuario': serializer.toJson<int?>(codigoUsuario),
       'codigoCategoria': serializer.toJson<int?>(codigoCategoria),
       'codigoLocal': serializer.toJson<int?>(codigoLocal),
       'codigoStatus': serializer.toJson<int?>(codigoStatus),
@@ -142,7 +149,7 @@ class OrdemServico extends DataClass implements Insertable<OrdemServico> {
 
   OrdemServico copyWith(
           {int? codigo,
-          String? codigoUsuario,
+          int? codigoUsuario,
           int? codigoCategoria,
           int? codigoLocal,
           int? codigoStatus,
@@ -204,8 +211,8 @@ class OrdemServico extends DataClass implements Insertable<OrdemServico> {
 }
 
 class OrdemServicosCompanion extends UpdateCompanion<OrdemServico> {
-  final Value<int> codigo;
-  final Value<String> codigoUsuario;
+  final Value<int?> codigo;
+  final Value<int?> codigoUsuario;
   final Value<int?> codigoCategoria;
   final Value<int?> codigoLocal;
   final Value<int?> codigoStatus;
@@ -226,7 +233,7 @@ class OrdemServicosCompanion extends UpdateCompanion<OrdemServico> {
   });
   OrdemServicosCompanion.insert({
     this.codigo = const Value.absent(),
-    required String codigoUsuario,
+    this.codigoUsuario = const Value.absent(),
     this.codigoCategoria = const Value.absent(),
     this.codigoLocal = const Value.absent(),
     this.codigoStatus = const Value.absent(),
@@ -234,10 +241,10 @@ class OrdemServicosCompanion extends UpdateCompanion<OrdemServico> {
     this.descricaoSolucao = const Value.absent(),
     this.dataAbertura = const Value.absent(),
     this.dataEncerramento = const Value.absent(),
-  }) : codigoUsuario = Value(codigoUsuario);
+  });
   static Insertable<OrdemServico> custom({
-    Expression<int>? codigo,
-    Expression<String>? codigoUsuario,
+    Expression<int?>? codigo,
+    Expression<int?>? codigoUsuario,
     Expression<int?>? codigoCategoria,
     Expression<int?>? codigoLocal,
     Expression<int?>? codigoStatus,
@@ -260,8 +267,8 @@ class OrdemServicosCompanion extends UpdateCompanion<OrdemServico> {
   }
 
   OrdemServicosCompanion copyWith(
-      {Value<int>? codigo,
-      Value<String>? codigoUsuario,
+      {Value<int?>? codigo,
+      Value<int?>? codigoUsuario,
       Value<int?>? codigoCategoria,
       Value<int?>? codigoLocal,
       Value<int?>? codigoStatus,
@@ -286,10 +293,10 @@ class OrdemServicosCompanion extends UpdateCompanion<OrdemServico> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (codigo.present) {
-      map['codigo'] = Variable<int>(codigo.value);
+      map['codigo'] = Variable<int?>(codigo.value);
     }
     if (codigoUsuario.present) {
-      map['codigo_usuario'] = Variable<String>(codigoUsuario.value);
+      map['codigo_usuario'] = Variable<int?>(codigoUsuario.value);
     }
     if (codigoCategoria.present) {
       map['codigo_categoria'] = Variable<int?>(codigoCategoria.value);
@@ -341,16 +348,18 @@ class $OrdemServicosTable extends OrdemServicos
   final VerificationMeta _codigoMeta = const VerificationMeta('codigo');
   @override
   late final GeneratedColumn<int?> codigo = GeneratedColumn<int?>(
-      'codigo', aliasedName, false,
+      'codigo', aliasedName, true,
       type: const IntType(),
       requiredDuringInsert: false,
       defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _codigoUsuarioMeta =
       const VerificationMeta('codigoUsuario');
   @override
-  late final GeneratedColumn<String?> codigoUsuario = GeneratedColumn<String?>(
-      'codigo_usuario', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+  late final GeneratedColumn<int?> codigoUsuario = GeneratedColumn<int?>(
+      'codigo_usuario', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      $customConstraints: 'NULLABLE REFERENCES tb_usuario(codigo)');
   final VerificationMeta _codigoCategoriaMeta =
       const VerificationMeta('codigoCategoria');
   @override
@@ -430,8 +439,6 @@ class $OrdemServicosTable extends OrdemServicos
           _codigoUsuarioMeta,
           codigoUsuario.isAcceptableOrUnknown(
               data['codigo_usuario']!, _codigoUsuarioMeta));
-    } else if (isInserting) {
-      context.missing(_codigoUsuarioMeta);
     }
     if (data.containsKey('codigo_categoria')) {
       context.handle(
@@ -493,30 +500,35 @@ class $OrdemServicosTable extends OrdemServicos
 }
 
 class Local extends DataClass implements Insertable<Local> {
-  final int codigo;
-  final String nome;
-  Local({required this.codigo, required this.nome});
+  final int? codigo;
+  final String? nome;
+  Local({this.codigo, this.nome});
   factory Local.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Local(
       codigo: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}codigo'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
       nome: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}nome'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}nome']),
     );
   }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['codigo'] = Variable<int>(codigo);
-    map['nome'] = Variable<String>(nome);
+    if (!nullToAbsent || codigo != null) {
+      map['codigo'] = Variable<int?>(codigo);
+    }
+    if (!nullToAbsent || nome != null) {
+      map['nome'] = Variable<String?>(nome);
+    }
     return map;
   }
 
   LocalsCompanion toCompanion(bool nullToAbsent) {
     return LocalsCompanion(
-      codigo: Value(codigo),
-      nome: Value(nome),
+      codigo:
+          codigo == null && nullToAbsent ? const Value.absent() : Value(codigo),
+      nome: nome == null && nullToAbsent ? const Value.absent() : Value(nome),
     );
   }
 
@@ -524,16 +536,16 @@ class Local extends DataClass implements Insertable<Local> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Local(
-      codigo: serializer.fromJson<int>(json['codigo']),
-      nome: serializer.fromJson<String>(json['nome']),
+      codigo: serializer.fromJson<int?>(json['codigo']),
+      nome: serializer.fromJson<String?>(json['nome']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'codigo': serializer.toJson<int>(codigo),
-      'nome': serializer.toJson<String>(nome),
+      'codigo': serializer.toJson<int?>(codigo),
+      'nome': serializer.toJson<String?>(nome),
     };
   }
 
@@ -561,19 +573,19 @@ class Local extends DataClass implements Insertable<Local> {
 }
 
 class LocalsCompanion extends UpdateCompanion<Local> {
-  final Value<int> codigo;
-  final Value<String> nome;
+  final Value<int?> codigo;
+  final Value<String?> nome;
   const LocalsCompanion({
     this.codigo = const Value.absent(),
     this.nome = const Value.absent(),
   });
   LocalsCompanion.insert({
     this.codigo = const Value.absent(),
-    required String nome,
-  }) : nome = Value(nome);
+    this.nome = const Value.absent(),
+  });
   static Insertable<Local> custom({
-    Expression<int>? codigo,
-    Expression<String>? nome,
+    Expression<int?>? codigo,
+    Expression<String?>? nome,
   }) {
     return RawValuesInsertable({
       if (codigo != null) 'codigo': codigo,
@@ -581,7 +593,7 @@ class LocalsCompanion extends UpdateCompanion<Local> {
     });
   }
 
-  LocalsCompanion copyWith({Value<int>? codigo, Value<String>? nome}) {
+  LocalsCompanion copyWith({Value<int?>? codigo, Value<String?>? nome}) {
     return LocalsCompanion(
       codigo: codigo ?? this.codigo,
       nome: nome ?? this.nome,
@@ -592,10 +604,10 @@ class LocalsCompanion extends UpdateCompanion<Local> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (codigo.present) {
-      map['codigo'] = Variable<int>(codigo.value);
+      map['codigo'] = Variable<int?>(codigo.value);
     }
     if (nome.present) {
-      map['nome'] = Variable<String>(nome.value);
+      map['nome'] = Variable<String?>(nome.value);
     }
     return map;
   }
@@ -618,15 +630,15 @@ class $LocalsTable extends Locals with TableInfo<$LocalsTable, Local> {
   final VerificationMeta _codigoMeta = const VerificationMeta('codigo');
   @override
   late final GeneratedColumn<int?> codigo = GeneratedColumn<int?>(
-      'codigo', aliasedName, false,
+      'codigo', aliasedName, true,
       type: const IntType(),
       requiredDuringInsert: false,
       defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _nomeMeta = const VerificationMeta('nome');
   @override
   late final GeneratedColumn<String?> nome = GeneratedColumn<String?>(
-      'nome', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      'nome', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [codigo, nome];
   @override
@@ -645,8 +657,6 @@ class $LocalsTable extends Locals with TableInfo<$LocalsTable, Local> {
     if (data.containsKey('nome')) {
       context.handle(
           _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
-    } else if (isInserting) {
-      context.missing(_nomeMeta);
     }
     return context;
   }
@@ -665,31 +675,294 @@ class $LocalsTable extends Locals with TableInfo<$LocalsTable, Local> {
   }
 }
 
-class Categoria extends DataClass implements Insertable<Categoria> {
-  final int codigo;
-  final String nome;
-  Categoria({required this.codigo, required this.nome});
-  factory Categoria.fromData(Map<String, dynamic> data, {String? prefix}) {
+class LocalSub extends DataClass implements Insertable<LocalSub> {
+  final int? codigo;
+  final int? codigoLocal;
+  final String? nome;
+  final String? descricao;
+  LocalSub({this.codigo, this.codigoLocal, this.nome, this.descricao});
+  factory LocalSub.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
-    return Categoria(
+    return LocalSub(
       codigo: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}codigo'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
+      codigoLocal: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo_local']),
       nome: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}nome'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}nome']),
+      descricao: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}descricao']),
     );
   }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['codigo'] = Variable<int>(codigo);
-    map['nome'] = Variable<String>(nome);
+    if (!nullToAbsent || codigo != null) {
+      map['codigo'] = Variable<int?>(codigo);
+    }
+    if (!nullToAbsent || codigoLocal != null) {
+      map['codigo_local'] = Variable<int?>(codigoLocal);
+    }
+    if (!nullToAbsent || nome != null) {
+      map['nome'] = Variable<String?>(nome);
+    }
+    if (!nullToAbsent || descricao != null) {
+      map['descricao'] = Variable<String?>(descricao);
+    }
+    return map;
+  }
+
+  LocalSubsCompanion toCompanion(bool nullToAbsent) {
+    return LocalSubsCompanion(
+      codigo:
+          codigo == null && nullToAbsent ? const Value.absent() : Value(codigo),
+      codigoLocal: codigoLocal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(codigoLocal),
+      nome: nome == null && nullToAbsent ? const Value.absent() : Value(nome),
+      descricao: descricao == null && nullToAbsent
+          ? const Value.absent()
+          : Value(descricao),
+    );
+  }
+
+  factory LocalSub.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalSub(
+      codigo: serializer.fromJson<int?>(json['codigo']),
+      codigoLocal: serializer.fromJson<int?>(json['codigoLocal']),
+      nome: serializer.fromJson<String?>(json['nome']),
+      descricao: serializer.fromJson<String?>(json['descricao']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'codigo': serializer.toJson<int?>(codigo),
+      'codigoLocal': serializer.toJson<int?>(codigoLocal),
+      'nome': serializer.toJson<String?>(nome),
+      'descricao': serializer.toJson<String?>(descricao),
+    };
+  }
+
+  LocalSub copyWith(
+          {int? codigo, int? codigoLocal, String? nome, String? descricao}) =>
+      LocalSub(
+        codigo: codigo ?? this.codigo,
+        codigoLocal: codigoLocal ?? this.codigoLocal,
+        nome: nome ?? this.nome,
+        descricao: descricao ?? this.descricao,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('LocalSub(')
+          ..write('codigo: $codigo, ')
+          ..write('codigoLocal: $codigoLocal, ')
+          ..write('nome: $nome, ')
+          ..write('descricao: $descricao')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(codigo, codigoLocal, nome, descricao);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalSub &&
+          other.codigo == this.codigo &&
+          other.codigoLocal == this.codigoLocal &&
+          other.nome == this.nome &&
+          other.descricao == this.descricao);
+}
+
+class LocalSubsCompanion extends UpdateCompanion<LocalSub> {
+  final Value<int?> codigo;
+  final Value<int?> codigoLocal;
+  final Value<String?> nome;
+  final Value<String?> descricao;
+  const LocalSubsCompanion({
+    this.codigo = const Value.absent(),
+    this.codigoLocal = const Value.absent(),
+    this.nome = const Value.absent(),
+    this.descricao = const Value.absent(),
+  });
+  LocalSubsCompanion.insert({
+    this.codigo = const Value.absent(),
+    this.codigoLocal = const Value.absent(),
+    this.nome = const Value.absent(),
+    this.descricao = const Value.absent(),
+  });
+  static Insertable<LocalSub> custom({
+    Expression<int?>? codigo,
+    Expression<int?>? codigoLocal,
+    Expression<String?>? nome,
+    Expression<String?>? descricao,
+  }) {
+    return RawValuesInsertable({
+      if (codigo != null) 'codigo': codigo,
+      if (codigoLocal != null) 'codigo_local': codigoLocal,
+      if (nome != null) 'nome': nome,
+      if (descricao != null) 'descricao': descricao,
+    });
+  }
+
+  LocalSubsCompanion copyWith(
+      {Value<int?>? codigo,
+      Value<int?>? codigoLocal,
+      Value<String?>? nome,
+      Value<String?>? descricao}) {
+    return LocalSubsCompanion(
+      codigo: codigo ?? this.codigo,
+      codigoLocal: codigoLocal ?? this.codigoLocal,
+      nome: nome ?? this.nome,
+      descricao: descricao ?? this.descricao,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (codigo.present) {
+      map['codigo'] = Variable<int?>(codigo.value);
+    }
+    if (codigoLocal.present) {
+      map['codigo_local'] = Variable<int?>(codigoLocal.value);
+    }
+    if (nome.present) {
+      map['nome'] = Variable<String?>(nome.value);
+    }
+    if (descricao.present) {
+      map['descricao'] = Variable<String?>(descricao.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalSubsCompanion(')
+          ..write('codigo: $codigo, ')
+          ..write('codigoLocal: $codigoLocal, ')
+          ..write('nome: $nome, ')
+          ..write('descricao: $descricao')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LocalSubsTable extends LocalSubs
+    with TableInfo<$LocalSubsTable, LocalSub> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalSubsTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _codigoMeta = const VerificationMeta('codigo');
+  @override
+  late final GeneratedColumn<int?> codigo = GeneratedColumn<int?>(
+      'codigo', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+  final VerificationMeta _codigoLocalMeta =
+      const VerificationMeta('codigoLocal');
+  @override
+  late final GeneratedColumn<int?> codigoLocal = GeneratedColumn<int?>(
+      'codigo_local', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      $customConstraints: 'NULLABLE REFERENCES tb_local(codigo)');
+  final VerificationMeta _nomeMeta = const VerificationMeta('nome');
+  @override
+  late final GeneratedColumn<String?> nome = GeneratedColumn<String?>(
+      'nome', aliasedName, true,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 120),
+      type: const StringType(),
+      requiredDuringInsert: false);
+  final VerificationMeta _descricaoMeta = const VerificationMeta('descricao');
+  @override
+  late final GeneratedColumn<String?> descricao = GeneratedColumn<String?>(
+      'descricao', aliasedName, true,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 250),
+      type: const StringType(),
+      requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [codigo, codigoLocal, nome, descricao];
+  @override
+  String get aliasedName => _alias ?? 'tb_local_sub';
+  @override
+  String get actualTableName => 'tb_local_sub';
+  @override
+  VerificationContext validateIntegrity(Insertable<LocalSub> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('codigo')) {
+      context.handle(_codigoMeta,
+          codigo.isAcceptableOrUnknown(data['codigo']!, _codigoMeta));
+    }
+    if (data.containsKey('codigo_local')) {
+      context.handle(
+          _codigoLocalMeta,
+          codigoLocal.isAcceptableOrUnknown(
+              data['codigo_local']!, _codigoLocalMeta));
+    }
+    if (data.containsKey('nome')) {
+      context.handle(
+          _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
+    }
+    if (data.containsKey('descricao')) {
+      context.handle(_descricaoMeta,
+          descricao.isAcceptableOrUnknown(data['descricao']!, _descricaoMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {codigo};
+  @override
+  LocalSub map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return LocalSub.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $LocalSubsTable createAlias(String alias) {
+    return $LocalSubsTable(attachedDatabase, alias);
+  }
+}
+
+class Categoria extends DataClass implements Insertable<Categoria> {
+  final int? codigo;
+  final String? nome;
+  Categoria({this.codigo, this.nome});
+  factory Categoria.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return Categoria(
+      codigo: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
+      nome: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}nome']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || codigo != null) {
+      map['codigo'] = Variable<int?>(codigo);
+    }
+    if (!nullToAbsent || nome != null) {
+      map['nome'] = Variable<String?>(nome);
+    }
     return map;
   }
 
   CategoriasCompanion toCompanion(bool nullToAbsent) {
     return CategoriasCompanion(
-      codigo: Value(codigo),
-      nome: Value(nome),
+      codigo:
+          codigo == null && nullToAbsent ? const Value.absent() : Value(codigo),
+      nome: nome == null && nullToAbsent ? const Value.absent() : Value(nome),
     );
   }
 
@@ -697,16 +970,16 @@ class Categoria extends DataClass implements Insertable<Categoria> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Categoria(
-      codigo: serializer.fromJson<int>(json['codigo']),
-      nome: serializer.fromJson<String>(json['nome']),
+      codigo: serializer.fromJson<int?>(json['codigo']),
+      nome: serializer.fromJson<String?>(json['nome']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'codigo': serializer.toJson<int>(codigo),
-      'nome': serializer.toJson<String>(nome),
+      'codigo': serializer.toJson<int?>(codigo),
+      'nome': serializer.toJson<String?>(nome),
     };
   }
 
@@ -734,19 +1007,19 @@ class Categoria extends DataClass implements Insertable<Categoria> {
 }
 
 class CategoriasCompanion extends UpdateCompanion<Categoria> {
-  final Value<int> codigo;
-  final Value<String> nome;
+  final Value<int?> codigo;
+  final Value<String?> nome;
   const CategoriasCompanion({
     this.codigo = const Value.absent(),
     this.nome = const Value.absent(),
   });
   CategoriasCompanion.insert({
     this.codigo = const Value.absent(),
-    required String nome,
-  }) : nome = Value(nome);
+    this.nome = const Value.absent(),
+  });
   static Insertable<Categoria> custom({
-    Expression<int>? codigo,
-    Expression<String>? nome,
+    Expression<int?>? codigo,
+    Expression<String?>? nome,
   }) {
     return RawValuesInsertable({
       if (codigo != null) 'codigo': codigo,
@@ -754,7 +1027,7 @@ class CategoriasCompanion extends UpdateCompanion<Categoria> {
     });
   }
 
-  CategoriasCompanion copyWith({Value<int>? codigo, Value<String>? nome}) {
+  CategoriasCompanion copyWith({Value<int?>? codigo, Value<String?>? nome}) {
     return CategoriasCompanion(
       codigo: codigo ?? this.codigo,
       nome: nome ?? this.nome,
@@ -765,10 +1038,10 @@ class CategoriasCompanion extends UpdateCompanion<Categoria> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (codigo.present) {
-      map['codigo'] = Variable<int>(codigo.value);
+      map['codigo'] = Variable<int?>(codigo.value);
     }
     if (nome.present) {
-      map['nome'] = Variable<String>(nome.value);
+      map['nome'] = Variable<String?>(nome.value);
     }
     return map;
   }
@@ -792,15 +1065,15 @@ class $CategoriasTable extends Categorias
   final VerificationMeta _codigoMeta = const VerificationMeta('codigo');
   @override
   late final GeneratedColumn<int?> codigo = GeneratedColumn<int?>(
-      'codigo', aliasedName, false,
+      'codigo', aliasedName, true,
       type: const IntType(),
       requiredDuringInsert: false,
       defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _nomeMeta = const VerificationMeta('nome');
   @override
   late final GeneratedColumn<String?> nome = GeneratedColumn<String?>(
-      'nome', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      'nome', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [codigo, nome];
   @override
@@ -819,8 +1092,6 @@ class $CategoriasTable extends Categorias
     if (data.containsKey('nome')) {
       context.handle(
           _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
-    } else if (isInserting) {
-      context.missing(_nomeMeta);
     }
     return context;
   }
@@ -841,31 +1112,36 @@ class $CategoriasTable extends Categorias
 
 class StatusOrdemServico extends DataClass
     implements Insertable<StatusOrdemServico> {
-  final int codigo;
-  final String nome;
-  StatusOrdemServico({required this.codigo, required this.nome});
+  final int? codigo;
+  final String? nome;
+  StatusOrdemServico({this.codigo, this.nome});
   factory StatusOrdemServico.fromData(Map<String, dynamic> data,
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return StatusOrdemServico(
       codigo: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}codigo'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
       nome: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}nome'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}nome']),
     );
   }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['codigo'] = Variable<int>(codigo);
-    map['nome'] = Variable<String>(nome);
+    if (!nullToAbsent || codigo != null) {
+      map['codigo'] = Variable<int?>(codigo);
+    }
+    if (!nullToAbsent || nome != null) {
+      map['nome'] = Variable<String?>(nome);
+    }
     return map;
   }
 
   StatusOrdemServicosCompanion toCompanion(bool nullToAbsent) {
     return StatusOrdemServicosCompanion(
-      codigo: Value(codigo),
-      nome: Value(nome),
+      codigo:
+          codigo == null && nullToAbsent ? const Value.absent() : Value(codigo),
+      nome: nome == null && nullToAbsent ? const Value.absent() : Value(nome),
     );
   }
 
@@ -873,16 +1149,16 @@ class StatusOrdemServico extends DataClass
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return StatusOrdemServico(
-      codigo: serializer.fromJson<int>(json['codigo']),
-      nome: serializer.fromJson<String>(json['nome']),
+      codigo: serializer.fromJson<int?>(json['codigo']),
+      nome: serializer.fromJson<String?>(json['nome']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'codigo': serializer.toJson<int>(codigo),
-      'nome': serializer.toJson<String>(nome),
+      'codigo': serializer.toJson<int?>(codigo),
+      'nome': serializer.toJson<String?>(nome),
     };
   }
 
@@ -911,19 +1187,19 @@ class StatusOrdemServico extends DataClass
 }
 
 class StatusOrdemServicosCompanion extends UpdateCompanion<StatusOrdemServico> {
-  final Value<int> codigo;
-  final Value<String> nome;
+  final Value<int?> codigo;
+  final Value<String?> nome;
   const StatusOrdemServicosCompanion({
     this.codigo = const Value.absent(),
     this.nome = const Value.absent(),
   });
   StatusOrdemServicosCompanion.insert({
     this.codigo = const Value.absent(),
-    required String nome,
-  }) : nome = Value(nome);
+    this.nome = const Value.absent(),
+  });
   static Insertable<StatusOrdemServico> custom({
-    Expression<int>? codigo,
-    Expression<String>? nome,
+    Expression<int?>? codigo,
+    Expression<String?>? nome,
   }) {
     return RawValuesInsertable({
       if (codigo != null) 'codigo': codigo,
@@ -932,7 +1208,7 @@ class StatusOrdemServicosCompanion extends UpdateCompanion<StatusOrdemServico> {
   }
 
   StatusOrdemServicosCompanion copyWith(
-      {Value<int>? codigo, Value<String>? nome}) {
+      {Value<int?>? codigo, Value<String?>? nome}) {
     return StatusOrdemServicosCompanion(
       codigo: codigo ?? this.codigo,
       nome: nome ?? this.nome,
@@ -943,10 +1219,10 @@ class StatusOrdemServicosCompanion extends UpdateCompanion<StatusOrdemServico> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (codigo.present) {
-      map['codigo'] = Variable<int>(codigo.value);
+      map['codigo'] = Variable<int?>(codigo.value);
     }
     if (nome.present) {
-      map['nome'] = Variable<String>(nome.value);
+      map['nome'] = Variable<String?>(nome.value);
     }
     return map;
   }
@@ -970,15 +1246,15 @@ class $StatusOrdemServicosTable extends StatusOrdemServicos
   final VerificationMeta _codigoMeta = const VerificationMeta('codigo');
   @override
   late final GeneratedColumn<int?> codigo = GeneratedColumn<int?>(
-      'codigo', aliasedName, false,
+      'codigo', aliasedName, true,
       type: const IntType(),
       requiredDuringInsert: false,
       defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _nomeMeta = const VerificationMeta('nome');
   @override
   late final GeneratedColumn<String?> nome = GeneratedColumn<String?>(
-      'nome', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      'nome', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [codigo, nome];
   @override
@@ -997,8 +1273,6 @@ class $StatusOrdemServicosTable extends StatusOrdemServicos
     if (data.containsKey('nome')) {
       context.handle(
           _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
-    } else if (isInserting) {
-      context.missing(_nomeMeta);
     }
     return context;
   }
@@ -1018,56 +1292,75 @@ class $StatusOrdemServicosTable extends StatusOrdemServicos
 }
 
 class Usuario extends DataClass implements Insertable<Usuario> {
-  final int codigo;
-  final String matricula;
-  final String senha;
-  final String nome;
-  final String email;
-  final String celular;
+  final int? codigo;
+  final String? matricula;
+  final String? senha;
+  final String? nome;
+  final String? email;
+  final String? celular;
   Usuario(
-      {required this.codigo,
-      required this.matricula,
-      required this.senha,
-      required this.nome,
-      required this.email,
-      required this.celular});
+      {this.codigo,
+      this.matricula,
+      this.senha,
+      this.nome,
+      this.email,
+      this.celular});
   factory Usuario.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Usuario(
       codigo: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}codigo'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
       matricula: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}matricula'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}matricula']),
       senha: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}senha'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}senha']),
       nome: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}nome'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}nome']),
       email: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}email'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}email']),
       celular: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}celular'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}celular']),
     );
   }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['codigo'] = Variable<int>(codigo);
-    map['matricula'] = Variable<String>(matricula);
-    map['senha'] = Variable<String>(senha);
-    map['nome'] = Variable<String>(nome);
-    map['email'] = Variable<String>(email);
-    map['celular'] = Variable<String>(celular);
+    if (!nullToAbsent || codigo != null) {
+      map['codigo'] = Variable<int?>(codigo);
+    }
+    if (!nullToAbsent || matricula != null) {
+      map['matricula'] = Variable<String?>(matricula);
+    }
+    if (!nullToAbsent || senha != null) {
+      map['senha'] = Variable<String?>(senha);
+    }
+    if (!nullToAbsent || nome != null) {
+      map['nome'] = Variable<String?>(nome);
+    }
+    if (!nullToAbsent || email != null) {
+      map['email'] = Variable<String?>(email);
+    }
+    if (!nullToAbsent || celular != null) {
+      map['celular'] = Variable<String?>(celular);
+    }
     return map;
   }
 
   UsuariosCompanion toCompanion(bool nullToAbsent) {
     return UsuariosCompanion(
-      codigo: Value(codigo),
-      matricula: Value(matricula),
-      senha: Value(senha),
-      nome: Value(nome),
-      email: Value(email),
-      celular: Value(celular),
+      codigo:
+          codigo == null && nullToAbsent ? const Value.absent() : Value(codigo),
+      matricula: matricula == null && nullToAbsent
+          ? const Value.absent()
+          : Value(matricula),
+      senha:
+          senha == null && nullToAbsent ? const Value.absent() : Value(senha),
+      nome: nome == null && nullToAbsent ? const Value.absent() : Value(nome),
+      email:
+          email == null && nullToAbsent ? const Value.absent() : Value(email),
+      celular: celular == null && nullToAbsent
+          ? const Value.absent()
+          : Value(celular),
     );
   }
 
@@ -1075,24 +1368,24 @@ class Usuario extends DataClass implements Insertable<Usuario> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Usuario(
-      codigo: serializer.fromJson<int>(json['codigo']),
-      matricula: serializer.fromJson<String>(json['matricula']),
-      senha: serializer.fromJson<String>(json['senha']),
-      nome: serializer.fromJson<String>(json['nome']),
-      email: serializer.fromJson<String>(json['email']),
-      celular: serializer.fromJson<String>(json['celular']),
+      codigo: serializer.fromJson<int?>(json['codigo']),
+      matricula: serializer.fromJson<String?>(json['matricula']),
+      senha: serializer.fromJson<String?>(json['senha']),
+      nome: serializer.fromJson<String?>(json['nome']),
+      email: serializer.fromJson<String?>(json['email']),
+      celular: serializer.fromJson<String?>(json['celular']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'codigo': serializer.toJson<int>(codigo),
-      'matricula': serializer.toJson<String>(matricula),
-      'senha': serializer.toJson<String>(senha),
-      'nome': serializer.toJson<String>(nome),
-      'email': serializer.toJson<String>(email),
-      'celular': serializer.toJson<String>(celular),
+      'codigo': serializer.toJson<int?>(codigo),
+      'matricula': serializer.toJson<String?>(matricula),
+      'senha': serializer.toJson<String?>(senha),
+      'nome': serializer.toJson<String?>(nome),
+      'email': serializer.toJson<String?>(email),
+      'celular': serializer.toJson<String?>(celular),
     };
   }
 
@@ -1140,12 +1433,12 @@ class Usuario extends DataClass implements Insertable<Usuario> {
 }
 
 class UsuariosCompanion extends UpdateCompanion<Usuario> {
-  final Value<int> codigo;
-  final Value<String> matricula;
-  final Value<String> senha;
-  final Value<String> nome;
-  final Value<String> email;
-  final Value<String> celular;
+  final Value<int?> codigo;
+  final Value<String?> matricula;
+  final Value<String?> senha;
+  final Value<String?> nome;
+  final Value<String?> email;
+  final Value<String?> celular;
   const UsuariosCompanion({
     this.codigo = const Value.absent(),
     this.matricula = const Value.absent(),
@@ -1156,23 +1449,19 @@ class UsuariosCompanion extends UpdateCompanion<Usuario> {
   });
   UsuariosCompanion.insert({
     this.codigo = const Value.absent(),
-    required String matricula,
-    required String senha,
-    required String nome,
-    required String email,
-    required String celular,
-  })  : matricula = Value(matricula),
-        senha = Value(senha),
-        nome = Value(nome),
-        email = Value(email),
-        celular = Value(celular);
+    this.matricula = const Value.absent(),
+    this.senha = const Value.absent(),
+    this.nome = const Value.absent(),
+    this.email = const Value.absent(),
+    this.celular = const Value.absent(),
+  });
   static Insertable<Usuario> custom({
-    Expression<int>? codigo,
-    Expression<String>? matricula,
-    Expression<String>? senha,
-    Expression<String>? nome,
-    Expression<String>? email,
-    Expression<String>? celular,
+    Expression<int?>? codigo,
+    Expression<String?>? matricula,
+    Expression<String?>? senha,
+    Expression<String?>? nome,
+    Expression<String?>? email,
+    Expression<String?>? celular,
   }) {
     return RawValuesInsertable({
       if (codigo != null) 'codigo': codigo,
@@ -1185,12 +1474,12 @@ class UsuariosCompanion extends UpdateCompanion<Usuario> {
   }
 
   UsuariosCompanion copyWith(
-      {Value<int>? codigo,
-      Value<String>? matricula,
-      Value<String>? senha,
-      Value<String>? nome,
-      Value<String>? email,
-      Value<String>? celular}) {
+      {Value<int?>? codigo,
+      Value<String?>? matricula,
+      Value<String?>? senha,
+      Value<String?>? nome,
+      Value<String?>? email,
+      Value<String?>? celular}) {
     return UsuariosCompanion(
       codigo: codigo ?? this.codigo,
       matricula: matricula ?? this.matricula,
@@ -1205,22 +1494,22 @@ class UsuariosCompanion extends UpdateCompanion<Usuario> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (codigo.present) {
-      map['codigo'] = Variable<int>(codigo.value);
+      map['codigo'] = Variable<int?>(codigo.value);
     }
     if (matricula.present) {
-      map['matricula'] = Variable<String>(matricula.value);
+      map['matricula'] = Variable<String?>(matricula.value);
     }
     if (senha.present) {
-      map['senha'] = Variable<String>(senha.value);
+      map['senha'] = Variable<String?>(senha.value);
     }
     if (nome.present) {
-      map['nome'] = Variable<String>(nome.value);
+      map['nome'] = Variable<String?>(nome.value);
     }
     if (email.present) {
-      map['email'] = Variable<String>(email.value);
+      map['email'] = Variable<String?>(email.value);
     }
     if (celular.present) {
-      map['celular'] = Variable<String>(celular.value);
+      map['celular'] = Variable<String?>(celular.value);
     }
     return map;
   }
@@ -1247,35 +1536,35 @@ class $UsuariosTable extends Usuarios with TableInfo<$UsuariosTable, Usuario> {
   final VerificationMeta _codigoMeta = const VerificationMeta('codigo');
   @override
   late final GeneratedColumn<int?> codigo = GeneratedColumn<int?>(
-      'codigo', aliasedName, false,
+      'codigo', aliasedName, true,
       type: const IntType(),
       requiredDuringInsert: false,
       defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _matriculaMeta = const VerificationMeta('matricula');
   @override
   late final GeneratedColumn<String?> matricula = GeneratedColumn<String?>(
-      'matricula', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      'matricula', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _senhaMeta = const VerificationMeta('senha');
   @override
   late final GeneratedColumn<String?> senha = GeneratedColumn<String?>(
-      'senha', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      'senha', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _nomeMeta = const VerificationMeta('nome');
   @override
   late final GeneratedColumn<String?> nome = GeneratedColumn<String?>(
-      'nome', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      'nome', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _emailMeta = const VerificationMeta('email');
   @override
   late final GeneratedColumn<String?> email = GeneratedColumn<String?>(
-      'email', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      'email', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _celularMeta = const VerificationMeta('celular');
   @override
   late final GeneratedColumn<String?> celular = GeneratedColumn<String?>(
-      'celular', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      'celular', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
       [codigo, matricula, senha, nome, email, celular];
@@ -1295,32 +1584,22 @@ class $UsuariosTable extends Usuarios with TableInfo<$UsuariosTable, Usuario> {
     if (data.containsKey('matricula')) {
       context.handle(_matriculaMeta,
           matricula.isAcceptableOrUnknown(data['matricula']!, _matriculaMeta));
-    } else if (isInserting) {
-      context.missing(_matriculaMeta);
     }
     if (data.containsKey('senha')) {
       context.handle(
           _senhaMeta, senha.isAcceptableOrUnknown(data['senha']!, _senhaMeta));
-    } else if (isInserting) {
-      context.missing(_senhaMeta);
     }
     if (data.containsKey('nome')) {
       context.handle(
           _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
-    } else if (isInserting) {
-      context.missing(_nomeMeta);
     }
     if (data.containsKey('email')) {
       context.handle(
           _emailMeta, email.isAcceptableOrUnknown(data['email']!, _emailMeta));
-    } else if (isInserting) {
-      context.missing(_emailMeta);
     }
     if (data.containsKey('celular')) {
       context.handle(_celularMeta,
           celular.isAcceptableOrUnknown(data['celular']!, _celularMeta));
-    } else if (isInserting) {
-      context.missing(_celularMeta);
     }
     return context;
   }
@@ -1343,12 +1622,14 @@ abstract class _$AppDb extends GeneratedDatabase {
   _$AppDb(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $OrdemServicosTable ordemServicos = $OrdemServicosTable(this);
   late final $LocalsTable locals = $LocalsTable(this);
+  late final $LocalSubsTable localSubs = $LocalSubsTable(this);
   late final $CategoriasTable categorias = $CategoriasTable(this);
   late final $StatusOrdemServicosTable statusOrdemServicos =
       $StatusOrdemServicosTable(this);
   late final $UsuariosTable usuarios = $UsuariosTable(this);
   late final OrdemServicoDao ordemServicoDao = OrdemServicoDao(this as AppDb);
   late final LocalDao localDao = LocalDao(this as AppDb);
+  late final LocalSubDao localSubDao = LocalSubDao(this as AppDb);
   late final CategoriaDao categoriaDao = CategoriaDao(this as AppDb);
   late final StatusOrdemServicoDao statusOrdemServicoDao =
       StatusOrdemServicoDao(this as AppDb);
@@ -1356,6 +1637,12 @@ abstract class _$AppDb extends GeneratedDatabase {
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [ordemServicos, locals, categorias, statusOrdemServicos, usuarios];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        ordemServicos,
+        locals,
+        localSubs,
+        categorias,
+        statusOrdemServicos,
+        usuarios
+      ];
 }

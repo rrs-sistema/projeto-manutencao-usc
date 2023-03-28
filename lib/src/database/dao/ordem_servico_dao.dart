@@ -1,14 +1,24 @@
 import 'package:drift/drift.dart';
 import 'package:manutencao_usc/src/database/tabelas/categoria.dart';
 import 'package:manutencao_usc/src/database/tabelas/local.dart';
+import 'package:manutencao_usc/src/database/tabelas/local_sub.dart';
 import 'package:manutencao_usc/src/database/tabelas/status_ordem_servico.dart';
+import 'package:manutencao_usc/src/database/tabelas/usuario.dart';
+import 'package:manutencao_usc/src/infra/sessao.dart';
 
 import '../tabelas/ordem_servico.dart';
 import './../../database/app_db.dart';
 
 part 'ordem_servico_dao.g.dart';
 
-@DriftAccessor(tables: [OrdemServicos, Categorias, Locals, StatusOrdemServicos])
+@DriftAccessor(tables: [
+  OrdemServicos,
+  Categorias,
+  Locals,
+  LocalSubs,
+  StatusOrdemServicos,
+  Usuarios
+])
 class OrdemServicoDao extends DatabaseAccessor<AppDb>
     with _$OrdemServicoDaoMixin {
   final AppDb db;
@@ -21,41 +31,39 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
   Future<List<OrdemServico>?> consultarLista() => select(ordemServicos).get();
 
   Future<List<OrdemServicoMontada>?> consultarListaMontado(
-      {int? mes, int? ano, String? status}) async {
+      {int? codigo, int? mes, int? ano, String? status}) async {
     final consulta = select(ordemServicos).join([
+      leftOuterJoin(
+          usuarios, usuarios.codigo.equalsExp(ordemServicos.codigoUsuario)),
       leftOuterJoin(locals, locals.codigo.equalsExp(ordemServicos.codigoLocal)),
       leftOuterJoin(categorias,
           categorias.codigo.equalsExp(ordemServicos.codigoCategoria)),
       leftOuterJoin(statusOrdemServicos,
           statusOrdemServicos.codigo.equalsExp(ordemServicos.codigoStatus)),
     ]);
-    if (mes != null && ano != null) {
+    if (codigo != null) {
+      consulta.where(ordemServicos.codigo.equals(codigo));
+    } else if (mes != null && ano != null) {
       consulta.where(ordemServicos.dataAbertura.month.equals(mes));
       consulta.where(ordemServicos.dataAbertura.year.equals(ano));
     }
-    if (status != null) {
-      switch (status) {
-        case 'Aberto':
-          consulta.where(ordemServicos.codigoStatus.equals(1));
-          break;
-        case 'Em andamento':
-          consulta.where(ordemServicos.codigoStatus.equals(2));
-          break;
-        case 'Pendente':
-          consulta.where(ordemServicos.codigoStatus.equals(3));
-          break;
-        default:
-          consulta.where(ordemServicos.codigoStatus.isBiggerThanValue(0));
+    if (status != null && status.isNotEmpty) {
+      var statusReal = await Sessao.db.statusOrdemServicoDao
+          .consultarListaFiltro('nome', status);
+      if (statusReal != null && statusReal.isNotEmpty) {
+        consulta.where(ordemServicos.codigoStatus.equals(statusReal[0].codigo));
       }
     }
     listaOrdemServicoMontada = await consulta.map((row) {
       final ordemServico = row.readTableOrNull(ordemServicos);
+      final usuario = row.readTableOrNull(usuarios);
       final categoria = row.readTableOrNull(categorias);
       final local = row.readTableOrNull(locals);
       final status = row.readTableOrNull(statusOrdemServicos);
 
       return OrdemServicoMontada(
           ordemServico: ordemServico,
+          usuario: usuario,
           categoria: categoria,
           local: local,
           statusOrdemServico: status);
@@ -74,31 +82,30 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
     return listaOrdemServico;
   }
 
-  Future<int> ultimoId() async {
-    final resultado =
-        await customSelect("select MAX(codigo) as ULTIMO from tb_ordem_servico")
-            .getSingleOrNull();
-    return resultado?.data["ULTIMO"] ?? 0;
+  Future<OrdemServico> pegaUltimaOrdemServico() async {
+    final resultado = await customSelect(
+            "select * from tb_ordem_servico order by codigo desc LIMIT 1;")
+        .getSingleOrNull();
+    return OrdemServico.fromData(resultado!.data);
   }
 
-  Future<int> inserir(OrdemServico pObjeto) {
+  Future<int> inserir(OrdemServicoMontada pObjeto) {
     return transaction(() async {
-      final maxId = await ultimoId();
-      pObjeto = pObjeto.copyWith(codigo: maxId + 1);
-      final idInserido = await into(ordemServicos).insert(pObjeto);
-      return idInserido;
+      pObjeto.ordemServico = pObjeto.ordemServico!.copyWith(
+          dataAbertura: DateTime.now(), codigoStatus: 1, codigoUsuario: 1);
+      return await into(ordemServicos).insert(pObjeto.ordemServico!);
     });
   }
 
-  Future<bool> alterar(OrdemServico pObjeto) {
+  Future<bool> alterar(OrdemServicoMontada pObjeto) {
     return transaction(() async {
-      return update(ordemServicos).replace(pObjeto);
+      return update(ordemServicos).replace(pObjeto.ordemServico!);
     });
   }
 
-  Future<int> excluir(OrdemServico pObjeto) {
+  Future<int> excluir(OrdemServicoMontada pObjeto) {
     return transaction(() async {
-      return delete(ordemServicos).delete(pObjeto);
+      return delete(ordemServicos).delete(pObjeto.ordemServico!);
     });
   }
 

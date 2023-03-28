@@ -9,6 +9,7 @@ class MenuInternoBotao extends StatelessWidget {
   final Color? circleColor;
   final bool isCircleEnabled;
   final double betweenHeight;
+  final dynamic page;
   final String? rota;
 
   // ignore: use_key_in_widget_constructors
@@ -20,6 +21,7 @@ class MenuInternoBotao extends StatelessWidget {
       this.iconColor = Colors.white,
       this.circleColor,
       this.isCircleEnabled = true,
+      this.page,
       this.rota,
       this.betweenHeight = 5.0})
       : super(key: key);
@@ -30,7 +32,7 @@ class MenuInternoBotao extends StatelessWidget {
         if (onPressed != null) {
           onPressed!();
         } else {
-          abrirJanela(context, rota);
+          abrirJanela(context, rota, page);
         }
       },
       child: Column(
@@ -66,11 +68,18 @@ class MenuInternoBotao extends StatelessWidget {
   }
 }
 
-abrirJanela(BuildContext context, String? rota) {
+abrirJanela(BuildContext context, String? rota, dynamic page) {
+  if (page != null) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+  }
   if (rota != '' && rota != null) {
+    var pagina = Rotas.definirRotasWidget(rota);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => pagina));
+    /*
     Navigator.pushNamed(
       context,
       rota,
     );
+    */
   }
 }
