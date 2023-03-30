@@ -1,20 +1,21 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:desktop_window/desktop_window.dart';
-import 'package:catcher/catcher.dart';
-import './src/infra/sessao.dart';
-import './src/database/app_db.dart';
-import './src/view/home_page.dart';
-import './src/view/shared/custom_animation.dart';
-import './src/view/shared/page/splash_screen_pagev.dart';
 // ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:catcher/catcher.dart';
 // ignore: depend_on_referenced_packages
 import 'package:sqlite3/open.dart';
 import 'dart:ffi' hide Size;
 import 'dart:io';
+
+import './src/view/shared/page/splash_screen_pagev.dart';
+import './src/view/shared/custom_animation.dart';
+import './src/database/app_db.dart';
+import './src/view/home_page.dart';
+import './src/infra/sessao.dart';
 import './src/infra/infra.dart';
 
 // adicionado para corrigir o problema de navegação da paginatedDataTable na Horizontal
@@ -34,13 +35,14 @@ void main() async {
 
   ///Inicia o Catcher e então inicia a aplicação.
   ///O Catcher vai pegar e reportar os erros de forma global
+  /*
   Catcher(
-    runAppFunction: () {
-      runApp(const MyApp());
-    },
+    runAppFunction: () {},
     debugConfig: Constantes.debugOptionsPagina,
     releaseConfig: Constantes.releaseOptionsPagina,
   );
+  */
+  runApp(const MyApp());
   configLoading();
 }
 
@@ -127,6 +129,7 @@ Widget _materialApp({bool? splash}) {
     onGenerateRoute: Rotas.definirRotas,
     theme: ThemeData(),
     home: splash == true ? const SplashScreenPage() : const HomePage(),
+    //home: splash == true ? const SplashScreenPage() : const UsuarioPage(),
     builder: EasyLoading.init(),
   );
 }

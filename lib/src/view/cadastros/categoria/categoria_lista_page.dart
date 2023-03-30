@@ -177,7 +177,7 @@ class CategoriaListaPageState extends State<CategoriaListaPage> {
     Navigator.of(context)
         .push(MaterialPageRoute(
             builder: (BuildContext context) => CategoriaPersistePage(
-                categoria: Categoria(codigo: 0, nome: ''),
+                categoria: Categoria(),
                 title: 'Categoria - Inserindo',
                 operacao: 'I')))
         .then((_) async {

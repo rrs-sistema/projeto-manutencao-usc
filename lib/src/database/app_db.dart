@@ -1,7 +1,3 @@
-import 'package:manutencao_usc/src/database/dao/local_sub_dao.dart';
-import 'package:manutencao_usc/src/database/dao/usuario_dao.dart';
-import 'package:manutencao_usc/src/database/tabelas/local_sub.dart';
-import 'package:manutencao_usc/src/database/tabelas/usuario.dart';
 import 'package:path_provider/path_provider.dart' as paths;
 import 'package:path/path.dart' as p;
 import 'package:drift/native.dart';
@@ -10,10 +6,18 @@ import 'dart:io';
 
 import './dao/status_ordem_servico_dao.dart';
 import './tabelas/status_ordem_servico.dart';
+import './dao/usuario_permissao_dao.dart';
+import './tabelas/usuario_permissao.dart';
 import './tabelas/ordem_servico.dart';
+import './tabelas/permissao.dart';
+import './dao/permissao_dao.dart';
+import './tabelas/local_sub.dart';
 import './tabelas/categoria.dart';
 import './dao/categoria_dao.dart';
+import './dao/local_sub_dao.dart';
 import './../infra/sessao.dart';
+import './tabelas/usuario.dart';
+import './dao/usuario_dao.dart';
 import './../infra/infra.dart';
 import './dao/local_dao.dart';
 import './tabelas/local.dart';
@@ -50,14 +54,18 @@ LazyDatabase _opeConnection() {
   LocalSubs,
   Categorias,
   StatusOrdemServicos,
-  Usuarios
+  Usuarios,
+  Permissaos,
+  UsuarioPermissaos
 ], daos: [
   OrdemServicoDao,
   LocalDao,
   LocalSubDao,
   CategoriaDao,
   StatusOrdemServicoDao,
-  UsuarioDao
+  UsuarioDao,
+  PermissaoDao,
+  UsuarioPermissaoDao
 ])
 class AppDb extends _$AppDb {
   AppDb() : super(_opeConnection());
@@ -81,8 +89,8 @@ class AppDb extends _$AppDb {
   Future<void> _popularBanco(AppDb db) async {
     var senha = Biblioteca.cifrar("53111");
     await db.customStatement(
-        "INSERT INTO tb_usuario (codigo, matricula, nome, email, celular, senha) "
-        "VALUES (1, '100001720212', 'Rivaldo Roberto', 'rivaldo.roberto@outlook.com', '41984221805', '$senha')");
+        "INSERT INTO tb_usuario (codigo, matricula, nome, email, celular, senha, deletado) "
+        "VALUES (1, '100001720212', 'Rivaldo Roberto', 'rivaldo.roberto@outlook.com', '41984221805', '$senha', 'N')");
 
     // DADOS INICIAIS DA TABELA DE LOCAIS
     await db.customStatement(
@@ -111,6 +119,8 @@ class AppDb extends _$AppDb {
         "INSERT INTO tb_local_sub (codigo_local, nome) VALUES (3, 'Biblioteca')");
     await db.customStatement(
         "INSERT INTO tb_local_sub (codigo_local, nome) VALUES (3, 'Sala dos professores')");
+    await db.customStatement(
+        "INSERT INTO tb_local_sub (codigo_local, nome) VALUES (3, 'Cozinha')");
     // DADOS INICIAIS DA TABELA DE CATEGORIAS
     await db.customStatement(
         "INSERT INTO tb_categoria (codigo, nome) VALUES (1, 'Eletrica')");
@@ -124,6 +134,64 @@ class AppDb extends _$AppDb {
         "INSERT INTO tb_status_ordem_servico (codigo, nome) VALUES (2, 'Em Andamento')");
     await db.customStatement(
         "INSERT INTO tb_status_ordem_servico (codigo, nome) VALUES (3, 'Finalizado')");
+
+    // DADOS INICIAIS DA TABELA DE PERMISSÃO
+    await db.customStatement(
+        "INSERT INTO tb_permissao (codigo, nome, descricao) VALUES (1, 'ROLE_SUPORTE', 'Suporte - acessos liberados a tudo')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (codigo, nome, descricao) VALUES (2, 'ROLE_ADMINISTRADOR', 'Admistrador - acessos a todas funcionalidades do sistema')");
+    //Dados da tabela de PERMISSAO PARA: categoria
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_CADASTRAR_CATEGORIA', 'Permissão para cadastrar as categorias')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_ALTERAR_CATEGORIA', 'Permissão para alterar as categorias')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_DELETAR_CATEGORIA', 'Permissão para deletar as categorias')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_PESQUISAR_CATEGORIA', 'Permissão para pesquisar as categorias')");
+    //Dados da tabela de PERMISSAO PARA: area/local/sublocal
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_CADASTRAR_LOCAL', 'Permissão para cadastrar áreas, local, sublocal')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_ALTERAR_LOCAL', 'Permissão para alterar áreas, local, sublocal')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_DELETAR_LOCAL', 'Permissão para deletar áreas, local, sublocal')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_PESQUISAR_LOCAL', 'Permissão para pesquisar áreas, local, sublocal')");
+
+    //Dados da tabela de PERMISSAO PARA: status da ordem de serviço
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_CADASTRAR_STATUS_ORDEM_SERVICO', 'Permissão para cadastrar os status da ordem de serviço')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_ALTERAR_STATUS_ORDEM_SERVICO', 'Permissão para alterar os status da ordem de serviço')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_DELETAR_STATUS_ORDEM_SERVICO', 'Permissão para deletar os status da ordem de serviço')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_PESQUISAR_STATUS_ORDEM_SERVICO', 'Permissão para pesquisar os status da ordem de serviço')");
+
+    //Dados da tabela de PERMISSAO PARA: ordem de serviço
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_CADASTRAR_ORDEM_SERVICO', 'Permissão para cadastrar as ordem de serviços')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_ALTERAR_ORDEM_SERVICO', 'Permissão para alterar as ordem de serviços')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_DELETAR_ORDEM_SERVICO', 'Permissão para deletar as ordem de serviços')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_PESQUISAR_ORDEM_SERVICO', 'Permissão para pesquisar as ordem de serviços')");
+
+    //Dados da tabela de PERMISSAO PARA: usuário
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_CADASTRAR_USUARIO', 'Permissão para cadastrar os usuários')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_ALTERAR_USUARIO', 'Permissão para alterar os usuários')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_DELETAR_USUARIO', 'Permissão para deletar os usuários')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_PESQUISAR_USUARIO', 'Permissão para pesquisar os usuários')");
+
+    // DADOS INICIAIS DA TABELA DE USUARIO_PERMISSAO
+    await db.customStatement(
+        "INSERT INTO tb_usuario_permissao (codigo_usuario, codigo_permissao) VALUES (1, 1)");
 
     // DADOS INICIAIS DA TABELA DE ORDEM DE SERVIÇO
     /*

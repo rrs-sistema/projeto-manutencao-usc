@@ -47,7 +47,7 @@ class ViewUtilLib {
   }
 
   static Color getBotaoFocusColor() {
-    return Colors.indigo;
+    return Constantes.secondaryColorOme!;
   }
 
   static Color getBackgroundColorBarraTelaDetalhe() {

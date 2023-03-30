@@ -12,6 +12,7 @@ import './../../../model/model.dart';
 
 class LookupLocalPage extends StatefulWidget {
   final String? title;
+  final bool bloquearTela;
   final List<String?>? colunas;
   final List<String>? campos;
   final String? rota;
@@ -35,6 +36,7 @@ class LookupLocalPage extends StatefulWidget {
       this.metodoConsultaCallBack,
       this.metodoCadastroCallBack,
       this.filtroAdicional,
+      this.bloquearTela = false,
       this.permiteCadastro = false})
       : super(key: key);
 
@@ -123,11 +125,13 @@ class LookupLocalPageState extends State<LookupLocalPage> {
                   child: DropdownButton<String>(
                     isExpanded: true,
                     value: _campoFiltro,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _campoFiltro = newValue;
-                      });
-                    },
+                    onChanged: !widget.bloquearTela
+                        ? (String? newValue) {
+                            setState(() {
+                              _campoFiltro = newValue;
+                            });
+                          }
+                        : null,
                     items: widget.colunas!
                         .map<DropdownMenuItem<String>>((String? value) {
                       return DropdownMenuItem<String>(
@@ -144,9 +148,12 @@ class LookupLocalPageState extends State<LookupLocalPage> {
                   alignment: Alignment.bottomLeft,
                   child: TextField(
                     focusNode: _focusNode,
-                    onSubmitted: (value) async {
-                      await _efetuarConsulta();
-                    },
+                    readOnly: widget.bloquearTela,
+                    onSubmitted: !widget.bloquearTela
+                        ? (value) async {
+                            await _efetuarConsulta();
+                          }
+                        : null,
                     controller: _valorFiltroController,
                     decoration: const InputDecoration(
                       labelText: 'Valor',

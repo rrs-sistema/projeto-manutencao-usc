@@ -23,9 +23,10 @@ class SplashScreenPage extends StatelessWidget {
                 children: [
                   Center(
                     child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      height: 300,
-                      width: 300,
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 25, vertical: 25),
+                      height: 100,
+                      width: 100,
                       child: Image.asset(
                         Constantes.logoPrincipal,
                       ),

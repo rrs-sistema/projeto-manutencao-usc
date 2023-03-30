@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:manutencao_usc/src/view/cadastros/local/local_sub_lista_page.dart';
 
 import './../view/cadastros/status_ordem_servico/status_ordem_servico_lista_page.dart';
+import './../view/cadastros/permissao/permissao_lista_page.dart';
 import './../view/cadastros/categoria/categoria_lista_page.dart';
+import './../view/cadastros/local/local_sub_lista_page.dart';
+import './../view/cadastros/usuario/usuario_lista_page.dart';
 import './../view/cadastros/local/local_lista_page.dart';
 import './../view/home_page.dart';
 
@@ -28,6 +30,14 @@ class Rotas {
       case '/statusOrdemServicoLista':
         return MaterialPageRoute(
             builder: (context) => const StatusOrdemServicoListaPage());
+      // Permissão do usuário
+      case '/permissaoLista':
+        return MaterialPageRoute(
+            builder: (context) => const PermissaoListaPage());
+      // Permissão do usuário
+      case '/usuarioLista':
+        return MaterialPageRoute(
+            builder: (context) => const UsuarioListaPage());
       // default
       default:
         return MaterialPageRoute(
@@ -51,6 +61,10 @@ class Rotas {
         return const LocalSubListaPage();
       case '/statusOrdemServicoLista':
         return const StatusOrdemServicoListaPage();
+      case '/usuarioLista':
+        return const UsuarioListaPage();
+      case '/permissaoLista':
+        return const PermissaoListaPage();
       default:
         null;
     }

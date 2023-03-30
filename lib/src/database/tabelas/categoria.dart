@@ -6,5 +6,6 @@ class Categorias extends Table {
 
   IntColumn get codigo =>
       integer().autoIncrement().nullable().named('codigo')();
-  TextColumn get nome => text().nullable().named('nome')();
+  TextColumn get nome =>
+      text().nullable().withLength(min: 3, max: 180).named('nome')();
 }

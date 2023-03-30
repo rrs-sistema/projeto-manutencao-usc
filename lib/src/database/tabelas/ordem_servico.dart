@@ -21,14 +21,20 @@ class OrdemServicos extends Table {
       .named('codigo_local')
       .nullable()
       .customConstraint('NULLABLE REFERENCES tb_local(codigo)')();
+
+  IntColumn get codigoSubLocal => integer()
+      .named('codigo_sub_local')
+      .nullable()
+      .customConstraint('NULLABLE REFERENCES tb_local_sub(codigo)')();
+
   IntColumn get codigoStatus =>
       integer().named('codigo_status').nullable().customConstraint(
           'NULLABLE REFERENCES tb_status_ordem_servico(codigo)')();
 
   TextColumn get descricaoProblema =>
-      text().nullable().named('descricao_problema')();
+      text().nullable().withLength(max: 500).named('descricao_problema')();
   TextColumn get descricaoSolucao =>
-      text().nullable().named('descricao_solucao')();
+      text().nullable().withLength(max: 650).named('descricao_solucao')();
   DateTimeColumn get dataAbertura =>
       dateTime().nullable().named('data_abertura')();
   DateTimeColumn get dataEncerramento =>
@@ -40,6 +46,7 @@ class OrdemServicoMontada {
   Usuario? usuario;
   Categoria? categoria;
   Local? local;
+  LocalSub? localSub;
   StatusOrdemServico? statusOrdemServico;
 
   OrdemServicoMontada({
@@ -47,6 +54,7 @@ class OrdemServicoMontada {
     this.usuario,
     this.categoria,
     this.local,
+    this.localSub,
     this.statusOrdemServico,
   });
 }

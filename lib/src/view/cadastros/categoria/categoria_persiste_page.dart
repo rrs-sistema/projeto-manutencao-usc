@@ -40,7 +40,7 @@ class CategoriaPersistePageState extends State<CategoriaPersistePage> {
   final ScrollController controllerScroll = ScrollController();
   final _foco = FocusNode();
 
-  Categoria? categoria;
+  Categoria? _categoria;
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class CategoriaPersistePageState extends State<CategoriaPersistePage> {
         onInvoke: _tratarAcoesAtalhos,
       ),
     };
-    categoria = widget.categoria;
+    _categoria = widget.categoria;
     _foco.requestFocus();
   }
 
@@ -131,14 +131,14 @@ class CategoriaPersistePageState extends State<CategoriaPersistePage> {
                             child: TextFormField(
                               maxLength: 100,
                               maxLines: 1,
-                              initialValue: categoria?.nome ?? '',
+                              initialValue: _categoria?.nome ?? '',
                               decoration: getInputDecoration(
                                   'Informe o Nome', 'Nome', false),
                               onSaved: (String? value) {},
                               validator:
                                   ValidaCampoFormulario.validarAlfanumerico,
                               onChanged: (text) {
-                                categoria = categoria!.copyWith(
+                                _categoria = _categoria!.copyWith(
                                     nome: removeCaracteresEspeciais(text));
                                 _formFoiAlterado = true;
                               },
@@ -189,9 +189,9 @@ class CategoriaPersistePageState extends State<CategoriaPersistePage> {
           () async {
         form.save();
         if (widget.operacao == 'A') {
-          await Sessao.db.categoriaDao.alterar(categoria!);
+          await Sessao.db.categoriaDao.alterar(_categoria!);
         } else {
-          await Sessao.db.categoriaDao.inserir(categoria!);
+          await Sessao.db.categoriaDao.inserir(_categoria!);
         }
         if (!mounted) return;
         Navigator.of(context).pop();
@@ -213,7 +213,7 @@ class CategoriaPersistePageState extends State<CategoriaPersistePage> {
 
   void _excluir() {
     gerarDialogBoxExclusao(context, () async {
-      await Sessao.db.categoriaDao.excluir(categoria!);
+      await Sessao.db.categoriaDao.excluir(_categoria!);
       if (!mounted) return;
       Navigator.of(context).pop();
       showInSnackBar("Registro excluído com sucesso!", context,

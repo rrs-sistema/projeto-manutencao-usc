@@ -1,23 +1,23 @@
-import 'package:flutter/material.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:backdrop/backdrop.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:manutencao_usc/src/view/ordem_servico/ordem_servico_persiste_page.dart';
 
-import '../../database/tabelas/ordem_servico.dart';
-import '../shared/caixas_de_dialogo.dart';
+import './../ordem_servico/ordem_servico_persiste_page.dart';
+import './../../database/tabelas/ordem_servico.dart';
+import './../../infra/atalhos_desktop_web.dart';
+import './../shared/caixas_de_dialogo.dart';
 import '../shared/page/filtro_page.dart';
-import '../shared/gradiente_app.dart';
-import '../shared/view_util_lib.dart';
-import '../shared/widgets_caixa.dart';
-import '../shared/widgets_input.dart';
-import '../../infra/atalhos_desktop_web.dart';
-import '../../database/dao/dao.dart';
-import '../../database/app_db.dart';
-import '../../infra/sessao.dart';
-import '../../infra/infra.dart';
-import '../../model/model.dart';
+import './../shared/gradiente_app.dart';
+import './../shared/view_util_lib.dart';
+import './../shared/widgets_caixa.dart';
+import './../shared/widgets_input.dart';
+import './../../database/dao/dao.dart';
+import './../../database/app_db.dart';
+import './../../infra/sessao.dart';
+import './../../infra/infra.dart';
+import './../../model/model.dart';
 
 class OrdenServicoListaPage extends StatefulWidget {
   const OrdenServicoListaPage({Key? key}) : super(key: key);
@@ -272,6 +272,18 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
                                             ascending),
                                   ),
                                   DataColumn(
+                                    label: const Text('Área'),
+                                    tooltip: 'Área do problema ocorrido',
+                                    onSort: (int columnIndex, bool ascending) =>
+                                        _sort<String>(
+                                            (OrdemServicoMontada
+                                                    ordensServicoMontada) =>
+                                                ordensServicoMontada
+                                                    .localSub?.nome,
+                                            columnIndex,
+                                            ascending),
+                                  ),
+                                  DataColumn(
                                     label: const Text('Data de Abertura'),
                                     tooltip: 'Data de Abertura',
                                     onSort: (int columnIndex, bool ascending) =>
@@ -401,6 +413,7 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
                     ordemServico: OrdemServico(),
                     categoria: Categoria(),
                     local: Local(),
+                    localSub: LocalSub(),
                     statusOrdemServico: StatusOrdemServico()),
                 title: 'Ordem de Serviço - Inserindo',
                 operacao: 'I')))
@@ -528,6 +541,9 @@ class _OrdemServicoDataSource extends DataTableSource {
           _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
         }),
         DataCell(Text(ordemServicoMontado.local!.nome ?? ''), onTap: () {
+          _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
+        }),
+        DataCell(Text(ordemServicoMontado.localSub!.nome ?? ''), onTap: () {
           _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
         }),
         DataCell(

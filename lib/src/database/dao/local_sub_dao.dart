@@ -11,12 +11,12 @@ class LocalSubDao extends DatabaseAccessor<AppDb> with _$LocalSubDaoMixin {
   final AppDb db;
 
   LocalSubDao(this.db) : super(db);
-  List<LocalSub>? listaLocal;
+  List<LocalSub>? listaSubLocal;
   List<LocalSubMontado>? listaLocalSubMontado;
 
   Future<List<LocalSub>?> consultarLista() async {
-    listaLocal = await select(localSubs).get();
-    return listaLocal;
+    listaSubLocal = await select(localSubs).get();
+    return listaSubLocal;
   }
 
   Future<List<LocalSubMontado>?> consultarListaMontado(
@@ -53,12 +53,12 @@ class LocalSubDao extends DatabaseAccessor<AppDb> with _$LocalSubDaoMixin {
 
   Future<List<LocalSub>?> consultarListaFiltro(
       String campo, String valor) async {
-    listaLocal = await (customSelect(
+    listaSubLocal = await (customSelect(
         "SELECT * FROM tb_local_sub WHERE $campo like '%$valor%'",
         readsFrom: {localSubs}).map((row) {
       return LocalSub.fromData(row.data);
     }).get());
-    return listaLocal;
+    return listaSubLocal;
   }
 
   Future<int> inserir(LocalSub pObjeto) {
@@ -81,11 +81,13 @@ class LocalSubDao extends DatabaseAccessor<AppDb> with _$LocalSubDaoMixin {
 
   static List<String> campos = <String>[
     'codigo',
+    'codigo_local',
     'nome',
   ];
 
   static List<String> colunas = <String>[
     'Código',
+    'Código do local',
     'nome',
   ];
 }

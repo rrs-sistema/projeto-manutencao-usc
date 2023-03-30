@@ -105,14 +105,30 @@ class TabCadastros extends StatelessWidget {
                         rota: "/localLista"),
                     terceiroBotao: BotaoMenu(
                         icon: FontAwesomeIcons.objectGroup,
-                        label: "SubLocal",
+                        label: "Sub local",
                         circleColor: Colors.blueAccent,
                         rota: "/localSubLista"),
                     quartoBotao: BotaoMenu(
                         icon: FontAwesomeIcons.idBadge,
-                        label: "Status",
+                        label: "Status da ordem de serviço",
                         circleColor: Colors.purple,
                         rota: "/statusOrdemServicoLista"),
+                  ),
+                  const MenuTituloGrupoMenuInterno(titulo: "Administração"),
+                  MenuInternoBotoes(
+                    primeiroBotao: BotaoMenu(
+                        icon: FontAwesomeIcons.graduationCap,
+                        label: "Permissão",
+                        circleColor: Colors.brown,
+                        rota: "/permissaoLista"),
+                    segundoBotao: BotaoMenu(
+                        // ignore: deprecated_member_use
+                        icon: FontAwesomeIcons.user,
+                        label: "Usuário",
+                        circleColor: Colors.redAccent,
+                        rota: "/usuarioLista"),
+                    terceiroBotao: null,
+                    quartoBotao: null,
                   ),
                 ],
               ),

@@ -8,12 +8,12 @@ import 'package:flutter_bootstrap/flutter_bootstrap.dart';
 import './../../../view/shared/page/lookup_local_page.dart';
 import './../../../infra/valida_campo_formulario.dart';
 import './../../../view/shared/caixas_de_dialogo.dart';
-import './../../../database/dao/local_sub_dao.dart';
 import './../../../database/tabelas/local_sub.dart';
 import './../../../infra/atalhos_desktop_web.dart';
 import './../../../view/shared/gradiente_app.dart';
 import './../../../view/shared/view_util_lib.dart';
 import './../../../view/shared/widgets_input.dart';
+import './../../../database/dao/local_dao.dart';
 import './../../../view/shared/botoes.dart';
 import './../../../infra/sessao.dart';
 import './../../../infra/infra.dart';
@@ -162,8 +162,8 @@ class SubLocalPersistePageState extends State<SubLocalPersistePage> {
                                                     (BuildContext context) =>
                                                         LookupLocalPage(
                                                   title: 'Importar Local',
-                                                  colunas: LocalSubDao.colunas,
-                                                  campos: LocalSubDao.campos,
+                                                  colunas: LocalDao.colunas,
+                                                  campos: LocalDao.campos,
                                                   campoPesquisaPadrao: 'nome',
                                                   valorPesquisaPadrao: '%',
                                                   metodoConsultaCallBack:
@@ -188,9 +188,9 @@ class SubLocalPersistePageState extends State<SubLocalPersistePage> {
                                             codigoLocal:
                                                 objetoJsonRetorno['codigo'],
                                           );
-                                          widget.subLocalMontado!.localSub =
-                                              widget.subLocalMontado!.localSub!
-                                                  .copyWith(
+                                          widget.subLocalMontado!.local = widget
+                                              .subLocalMontado!.local!
+                                              .copyWith(
                                             codigo: objetoJsonRetorno['codigo'],
                                             nome: objetoJsonRetorno['nome'],
                                           );

@@ -124,6 +124,7 @@ class _TabHomeState extends State<TabHome> {
                                                         OrdemServico(),
                                                     categoria: Categoria(),
                                                     local: Local(),
+                                                    localSub: LocalSub(),
                                                     statusOrdemServico:
                                                         StatusOrdemServico()),
                                             title:
@@ -251,7 +252,7 @@ class _TabHomeState extends State<TabHome> {
                                                       SizedBox(
                                                         height: 20.0,
                                                         child: Text(
-                                                            '${lastOrdeService.codigo != null ? lastOrdeService.descricaoProblema : 'Ainda não tem Ordem de Serviço'}',
+                                                            '${lastOrdeService.codigo != null ? lastOrdeService.descricaoProblema : 'Ordem de Serviço não cadastrada'}',
                                                             softWrap: true,
                                                             overflow:
                                                                 TextOverflow
@@ -336,7 +337,10 @@ class _TabHomeState extends State<TabHome> {
       );
 
   Future _getLastOrdeService() async {
-    lastOrdeService = await Sessao.db.ordemServicoDao.pegaUltimaOrdemServico();
+    var ultimaOs = await Sessao.db.ordemServicoDao.pegaUltimaOrdemServico();
+    if (ultimaOs != null) {
+      lastOrdeService = ultimaOs;
+    }
     setState(() {});
   }
 }

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_bootstrap/flutter_bootstrap.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:manutencao_usc/src/database/dao/local_dao.dart';
+import 'package:manutencao_usc/src/database/dao/local_sub_dao.dart';
 import 'package:manutencao_usc/src/view/shared/botoes.dart';
 import 'package:manutencao_usc/src/view/shared/gradiente_app.dart';
 
@@ -132,6 +134,15 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
         widget.ordemServicoMontado?.categoria?.nome ?? '';
     final importaLocalController = TextEditingController();
     importaLocalController.text = widget.ordemServicoMontado?.local?.nome ?? '';
+
+    final importaCodigoLocalController = TextEditingController();
+    importaCodigoLocalController.text =
+        widget.ordemServicoMontado?.local?.codigo.toString() ?? '';
+
+    final importaLocalSubController = TextEditingController();
+    importaLocalSubController.text =
+        widget.ordemServicoMontado?.localSub?.nome ?? '';
+
     final importaStatusController = TextEditingController();
     importaStatusController.text =
         widget.ordemServicoMontado?.statusOrdemServico?.nome ?? '';
@@ -276,7 +287,7 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                         height: 60,
                         children: <BootstrapCol>[
                           BootstrapCol(
-                            sizes: 'col-12',
+                            sizes: 'col-12 col-md-6',
                             child: Row(
                               children: <Widget>[
                                 Expanded(
@@ -288,8 +299,8 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                     controller: importaLocalController,
                                     readOnly: true,
                                     decoration: getInputDecoration(
-                                        'Conteúdo para o campo Local',
-                                        'Local *',
+                                        'Conteúdo para o campo área',
+                                        'Área *',
                                         false),
                                     onSaved: (String? value) {},
                                     onChanged: (text) {
@@ -300,7 +311,7 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                 Expanded(
                                   flex: 0,
                                   child: IconButton(
-                                    tooltip: 'Importar Local',
+                                    tooltip: 'Importar área',
                                     icon: ViewUtilLib.getIconBotaoLookup(),
                                     onPressed: () async {
                                       ///chamando o lookup
@@ -311,9 +322,9 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                                 builder:
                                                     (BuildContext context) =>
                                                         LookupLocalPage(
-                                                  title: 'Importar Local',
-                                                  colunas: CategoriaDao.colunas,
-                                                  campos: CategoriaDao.campos,
+                                                  title: 'Importar Área',
+                                                  colunas: LocalDao.colunas,
+                                                  campos: LocalDao.campos,
                                                   campoPesquisaPadrao: 'nome',
                                                   valorPesquisaPadrao: '%',
                                                   metodoConsultaCallBack:
@@ -330,9 +341,6 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                               ));
                                       if (objetoJsonRetorno != null) {
                                         if (objetoJsonRetorno['nome'] != null) {
-                                          importaLocalController.text =
-                                              objetoJsonRetorno['nome'];
-
                                           widget.ordemServicoMontado!
                                                   .ordemServico =
                                               widget.ordemServicoMontado!
@@ -344,6 +352,109 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
 
                                           widget.ordemServicoMontado!.local =
                                               widget.ordemServicoMontado!.local!
+                                                  .copyWith(
+                                            nome: objetoJsonRetorno['nome'],
+                                          );
+
+                                          setState(() {
+                                            importaLocalController.text =
+                                                objetoJsonRetorno['nome'];
+                                            widget.ordemServicoMontado!.local =
+                                                widget
+                                                    .ordemServicoMontado!.local!
+                                                    .copyWith(
+                                                        codigo:
+                                                            objetoJsonRetorno[
+                                                                'codigo'],
+                                                        nome: objetoJsonRetorno[
+                                                            'nome']);
+                                            importaCodigoLocalController.text =
+                                                objetoJsonRetorno['codigo']
+                                                    .toString();
+                                          });
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          BootstrapCol(
+                            sizes: 'col-12 col-md-6',
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 1,
+                                  child: TextFormField(
+                                    focusNode: _foco,
+                                    validator: ValidaCampoFormulario
+                                        .validarObrigatorio,
+                                    controller: importaLocalSubController,
+                                    readOnly: true,
+                                    decoration: getInputDecoration(
+                                        'Conteúdo para o campo local da área',
+                                        'Local da área *',
+                                        false),
+                                    onSaved: (String? value) {},
+                                    onChanged: (text) {
+                                      //paginaMestreDetalheFoiAlterada = true;
+                                    },
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 0,
+                                  child: IconButton(
+                                    tooltip: 'Importar local da área',
+                                    icon: ViewUtilLib.getIconBotaoLookup(),
+                                    onPressed: () async {
+                                      ///chamando o lookup
+                                      Map<String, dynamic>? objetoJsonRetorno =
+                                          await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        LookupLocalPage(
+                                                  title:
+                                                      'Importar local de ${widget.ordemServicoMontado!.local!.nome}',
+                                                  colunas: LocalSubDao.colunas,
+                                                  campos: LocalSubDao.campos,
+                                                  campoPesquisaPadrao:
+                                                      'codigo_local',
+                                                  valorPesquisaPadrao:
+                                                      importaCodigoLocalController
+                                                          .text,
+                                                  metodoConsultaCallBack:
+                                                      _filtrarSubLocalLookup,
+                                                  permiteCadastro: true,
+                                                  bloquearTela: true,
+                                                  metodoCadastroCallBack: () {
+                                                    Navigator.pushNamed(
+                                                      context,
+                                                      '/localSubLista',
+                                                    );
+                                                  },
+                                                ),
+                                                fullscreenDialog: true,
+                                              ));
+                                      if (objetoJsonRetorno != null) {
+                                        if (objetoJsonRetorno['nome'] != null) {
+                                          importaLocalSubController.text =
+                                              objetoJsonRetorno['nome'];
+
+                                          widget.ordemServicoMontado!
+                                                  .ordemServico =
+                                              widget.ordemServicoMontado!
+                                                  .ordemServico!
+                                                  .copyWith(
+                                                      codigoSubLocal:
+                                                          objetoJsonRetorno[
+                                                              'codigo']);
+
+                                          widget.ordemServicoMontado!.localSub =
+                                              widget.ordemServicoMontado!
+                                                  .localSub!
                                                   .copyWith(
                                             nome: objetoJsonRetorno['nome'],
                                           );
@@ -360,7 +471,10 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                       const Divider(
                         color: Colors.white,
                       ),
-                      if (widget.operacao == 'A')
+                      if (widget.operacao == 'A') ...[
+                        const Divider(
+                          color: Colors.white,
+                        ),
                         BootstrapRow(
                           height: 60,
                           children: <BootstrapCol>[
@@ -377,7 +491,7 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                       controller: importaStatusController,
                                       readOnly: true,
                                       decoration: getInputDecoration(
-                                          'Conteúdo para o campo Status',
+                                          'Conteúdo para o campo status',
                                           'Status *',
                                           false),
                                       onSaved: (String? value) {},
@@ -399,7 +513,8 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                                   builder:
                                                       (BuildContext context) =>
                                                           LookupLocalPage(
-                                                    title: 'Importar Status',
+                                                    title:
+                                                        'Importar status da ordem',
                                                     colunas:
                                                         CategoriaDao.colunas,
                                                     campos: CategoriaDao.campos,
@@ -449,6 +564,7 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                             ),
                           ],
                         ),
+                      ],
                       const Divider(
                         color: Colors.white,
                       ),
@@ -466,8 +582,8 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                       .ordemServico?.descricaoProblema ??
                                   '',
                               decoration: getInputDecoration(
-                                  'Conteúdo para o campo Descrição do Problema',
-                                  'Descrição do Problema *',
+                                  'Conteúdo para o campo descrição do problema',
+                                  'Descrição do problema *',
                                   false),
                               onSaved: (String? value) {},
                               onChanged: (text) {
@@ -483,38 +599,40 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                           ),
                         ],
                       ),
-                      const Divider(
-                        color: Colors.white,
-                      ),
-                      BootstrapRow(
-                        height: 60,
-                        children: <BootstrapCol>[
-                          BootstrapCol(
-                            sizes: 'col-12',
-                            child: TextFormField(
-                              maxLength: 250,
-                              maxLines: 3,
-                              initialValue: widget.ordemServicoMontado!
-                                      .ordemServico?.descricaoSolucao ??
-                                  '',
-                              decoration: getInputDecoration(
-                                  'Conteúdo para o campo Solução do Problema',
-                                  'Solução do Problema',
-                                  false),
-                              onSaved: (String? value) {},
-                              onChanged: (text) {
-                                widget.ordemServicoMontado!.ordemServico =
-                                    widget
-                                        .ordemServicoMontado!.ordemServico!
-                                        .copyWith(
-                                            descricaoSolucao:
-                                                removeCaracteresEspeciais(
-                                                    text));
-                              },
+                      if (widget.operacao == 'A') ...[
+                        const Divider(
+                          color: Colors.white,
+                        ),
+                        BootstrapRow(
+                          height: 60,
+                          children: <BootstrapCol>[
+                            BootstrapCol(
+                              sizes: 'col-12',
+                              child: TextFormField(
+                                maxLength: 250,
+                                maxLines: 3,
+                                initialValue: widget.ordemServicoMontado!
+                                        .ordemServico?.descricaoSolucao ??
+                                    '',
+                                decoration: getInputDecoration(
+                                    'Conteúdo para o campo solução do problema',
+                                    'Solução do problema',
+                                    false),
+                                onSaved: (String? value) {},
+                                onChanged: (text) {
+                                  widget.ordemServicoMontado!.ordemServico =
+                                      widget
+                                          .ordemServicoMontado!.ordemServico!
+                                          .copyWith(
+                                              descricaoSolucao:
+                                                  removeCaracteresEspeciais(
+                                                      text));
+                                },
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                       const Divider(
                         color: Colors.white,
                       ),
@@ -554,6 +672,12 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
   void _filtrarLocalLookup(String campo, String valor) async {
     final listaFiltrada =
         await Sessao.db.localDao.consultarListaFiltro(campo, valor);
+    Sessao.retornoJsonLookup = jsonEncode(listaFiltrada);
+  }
+
+  void _filtrarSubLocalLookup(String campo, String valor) async {
+    final listaFiltrada = await Sessao.db.localSubDao.consultarListaFiltro(
+        'codigo_local', widget.ordemServicoMontado!.local!.codigo.toString());
     Sessao.retornoJsonLookup = jsonEncode(listaFiltrada);
   }
 

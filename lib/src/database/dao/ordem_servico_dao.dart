@@ -1,13 +1,13 @@
 import 'package:drift/drift.dart';
-import 'package:manutencao_usc/src/database/tabelas/categoria.dart';
-import 'package:manutencao_usc/src/database/tabelas/local.dart';
-import 'package:manutencao_usc/src/database/tabelas/local_sub.dart';
-import 'package:manutencao_usc/src/database/tabelas/status_ordem_servico.dart';
-import 'package:manutencao_usc/src/database/tabelas/usuario.dart';
-import 'package:manutencao_usc/src/infra/sessao.dart';
 
-import '../tabelas/ordem_servico.dart';
-import './../../database/app_db.dart';
+import './../tabelas/status_ordem_servico.dart';
+import './../tabelas/ordem_servico.dart';
+import './../tabelas/categoria.dart';
+import './../tabelas/local_sub.dart';
+import './../tabelas/usuario.dart';
+import './../../infra/sessao.dart';
+import './../tabelas/local.dart';
+import './../app_db.dart';
 
 part 'ordem_servico_dao.g.dart';
 
@@ -36,6 +36,11 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
       leftOuterJoin(
           usuarios, usuarios.codigo.equalsExp(ordemServicos.codigoUsuario)),
       leftOuterJoin(locals, locals.codigo.equalsExp(ordemServicos.codigoLocal)),
+      //leftOuterJoin(localSubs, localSubs.codigoLocal.equalsExp(locals.codigo)),
+      leftOuterJoin(
+        localSubs,
+        localSubs.codigo.equalsExp(ordemServicos.codigoSubLocal),
+      ),
       leftOuterJoin(categorias,
           categorias.codigo.equalsExp(ordemServicos.codigoCategoria)),
       leftOuterJoin(statusOrdemServicos,
@@ -59,6 +64,7 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
       final usuario = row.readTableOrNull(usuarios);
       final categoria = row.readTableOrNull(categorias);
       final local = row.readTableOrNull(locals);
+      final localSub = row.readTableOrNull(localSubs);
       final status = row.readTableOrNull(statusOrdemServicos);
 
       return OrdemServicoMontada(
@@ -66,6 +72,7 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
           usuario: usuario,
           categoria: categoria,
           local: local,
+          localSub: localSub,
           statusOrdemServico: status);
     }).get();
     return listaOrdemServicoMontada;
@@ -82,11 +89,12 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
     return listaOrdemServico;
   }
 
-  Future<OrdemServico> pegaUltimaOrdemServico() async {
+  Future<OrdemServico?> pegaUltimaOrdemServico() async {
     final resultado = await customSelect(
             "select * from tb_ordem_servico order by codigo desc LIMIT 1;")
         .getSingleOrNull();
-    return OrdemServico.fromData(resultado!.data);
+    if (resultado == null) return null;
+    return OrdemServico.fromData(resultado.data);
   }
 
   Future<int> inserir(OrdemServicoMontada pObjeto) {
@@ -110,28 +118,18 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
   }
 
   static List<String> campos = <String>[
-    'ID',
-    'DATA_ABERTURA',
-    'DATA_ATENDIMENTO',
-    'CATEGORIA',
-    'LOCAL',
-    'DESCRICAO_PROBLEMA',
-    'NOME_USUARIO',
-    'CONTATO_EMAIL',
-    'CONTATO_CELULAR',
-    'STATUS_ORDERM_SERVICO',
+    'codigo',
+    'data_abertura',
+    'data_encerramento',
+    'descricao_problema',
+    'descricao_solucao',
   ];
 
   static List<String> colunas = <String>[
-    'Id',
+    'Código',
     'Data de Abertura',
     'Data de Atendimento',
-    'Categoria',
-    'Local',
-    'Problema',
-    'Usuário',
-    'Celular',
-    'E-mail',
-    'Status da OS',
+    'Descrição do problema',
+    'Descrição da solução',
   ];
 }

@@ -5,5 +5,6 @@ class Locals extends Table {
   String get tableName => 'tb_local';
   IntColumn get codigo =>
       integer().autoIncrement().nullable().named('codigo')();
-  TextColumn get nome => text().nullable().named('nome')();
+  TextColumn get nome =>
+      text().nullable().withLength(min: 3, max: 180).named('nome')();
 }

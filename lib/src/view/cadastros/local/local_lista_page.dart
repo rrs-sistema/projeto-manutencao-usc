@@ -175,9 +175,7 @@ class LocalListaPageState extends State<LocalListaPage> {
     Navigator.of(context)
         .push(MaterialPageRoute(
             builder: (BuildContext context) => LocalPersistePage(
-                local: Local(codigo: 0, nome: ''),
-                title: 'Local - Inserindo',
-                operacao: 'I')))
+                local: Local(), title: 'Local - Inserindo', operacao: 'I')))
         .then((_) async {
       await _refrescarTela();
     });

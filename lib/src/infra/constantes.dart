@@ -203,7 +203,7 @@ class Constantes {
       '$imageDir/rrs.system.technology-48.png';
   static const String rrsSystemLogoGrande =
       '$imageDir/logo_rrs.system.technology.png';
-  static const String logoPrincipal = '$imageDir/logo_manutencao.gif';
+  static const String logoPrincipal = '$imageDir/logo-manutencao.png';
 
   static const String googleMapFake = '$imageDir/maps.png';
   static const String restauranteBackgroundImage =

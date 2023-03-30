@@ -12,8 +12,8 @@ import './../../../view/shared/gradiente_app.dart';
 import './../../../view/shared/botoes.dart';
 import './../../../database/app_db.dart';
 import './../../../infra/sessao.dart';
-import './../../../infra/infra.dart';
 import 'local_sub_persiste_page.dart';
+import './../../../infra/infra.dart';
 
 class LocalSubListaPage extends StatefulWidget {
   const LocalSubListaPage({Key? key}) : super(key: key);
@@ -71,10 +71,10 @@ class LocalSubListaPageState extends State<LocalSubListaPage> {
 
   @override
   Widget build(BuildContext context) {
-    final listaLocalSub = Sessao.db.localSubDao.listaLocalSubMontado;
+    final listaSubLocal = Sessao.db.localSubDao.listaLocalSubMontado;
 
     final _LocalSubMontadoDataSource localSubMontadoDataSource =
-        _LocalSubMontadoDataSource(listaLocalSub, context, _refrescarTela);
+        _LocalSubMontadoDataSource(listaSubLocal, context, _refrescarTela);
 
     // ignore: no_leading_underscores_for_local_identifiers
     void _sort<T>(
@@ -133,7 +133,7 @@ class LocalSubListaPageState extends State<LocalSubListaPage> {
             onRefresh: _refrescarTela,
             child: Scrollbar(
               controller: controllerScroll,
-              child: listaLocalSub == null
+              child: listaSubLocal == null
                   ? const Center(child: CircularProgressIndicator())
                   : ListView(
                       controller: controllerScroll,
@@ -200,12 +200,8 @@ class LocalSubListaPageState extends State<LocalSubListaPage> {
         .push(MaterialPageRoute(
             builder: (BuildContext context) => SubLocalPersistePage(
                 subLocalMontado: LocalSubMontado(
-                  localSub: LocalSub(
-                    codigo: null,
-                  ),
-                  local: Local(
-                    codigo: null,
-                  ),
+                  localSub: LocalSub(),
+                  local: Local(),
                 ),
                 title: 'Sub Local - Inserindo',
                 operacao: 'I')))

@@ -36,6 +36,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:manutencao_usc/src/model/transiente/filtro.dart';
+import 'package:manutencao_usc/src/view/shared/gradiente_app.dart';
 import 'package:manutencao_usc/src/view/shared/view_util_lib.dart';
 
 class FiltroPage extends StatefulWidget {
@@ -102,6 +103,11 @@ class FiltroPageState extends State<FiltroPage> {
             },
           ),
         ],
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: gradienteApp(),
+          ),
+        ),
       ),
       body: Form(
         key: _formKey,
