@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import './../tabelas/status_ordem_servico.dart';
 import './../tabelas/ordem_servico.dart';
@@ -29,6 +30,8 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
   List<OrdemServico>? listaOrdemServico;
 
   Future<List<OrdemServico>?> consultarLista() => select(ordemServicos).get();
+
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   Future<List<OrdemServicoMontada>?> consultarListaMontado(
       {int? codigo, int? mes, int? ano, String? status}) async {
@@ -97,23 +100,30 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
     return OrdemServico.fromData(resultado.data);
   }
 
-  Future<int> inserir(OrdemServicoMontada pObjeto) {
+  Future<int> inserir(OrdemServico ordemServico) {
     return transaction(() async {
-      pObjeto.ordemServico = pObjeto.ordemServico!.copyWith(
-          dataAbertura: DateTime.now(), codigoStatus: 1, codigoUsuario: 1);
-      return await into(ordemServicos).insert(pObjeto.ordemServico!);
+      final SharedPreferences prefs = await _prefs;
+      dynamic codigoUsuario = prefs.get("codigoUsuario");
+      if (codigoUsuario != null || codigoUsuario > 0) {
+        return 0;
+      }
+      ordemServico = ordemServico.copyWith(
+          dataAbertura: DateTime.now(),
+          codigoStatus: 1,
+          codigoUsuario: codigoUsuario);
+      return await into(ordemServicos).insert(ordemServico);
     });
   }
 
-  Future<bool> alterar(OrdemServicoMontada pObjeto) {
+  Future<bool> alterar(OrdemServico ordemServico) {
     return transaction(() async {
-      return update(ordemServicos).replace(pObjeto.ordemServico!);
+      return update(ordemServicos).replace(ordemServico);
     });
   }
 
-  Future<int> excluir(OrdemServicoMontada pObjeto) {
+  Future<int> excluir(OrdemServico ordemServico) {
     return transaction(() async {
-      return delete(ordemServicos).delete(pObjeto.ordemServico!);
+      return delete(ordemServicos).delete(ordemServico);
     });
   }
 

@@ -140,8 +140,9 @@ class LocalListaPageState extends State<StatusOrdemServicoListaPage> {
                           Constantes.paddingListViewListaPage),
                       children: <Widget>[
                         PaginatedDataTable(
-                          header: const Text(
-                              'Relação - Status da Ordem de Serviço'),
+                          header: Text(Biblioteca.isDesktop()
+                              ? 'Relação - Status da Ordem de Serviço'
+                              : 'Relação - Status da OS'),
                           rowsPerPage: _rowsPerPage!,
                           onRowsPerPageChanged: (int? value) {
                             setState(() {

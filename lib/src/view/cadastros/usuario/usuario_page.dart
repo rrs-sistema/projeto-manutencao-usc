@@ -11,15 +11,15 @@ import './../../../view/shared/caixas_de_dialogo.dart';
 import './../../../view/shared/gradiente_app.dart';
 import './../../../view/shared/view_util_lib.dart';
 import './../../../infra/atalhos_desktop_web.dart';
+import './../../../database/tabelas/usuario.dart';
 import './../../../controller/controller.dart';
 import './../../../view/shared/botoes.dart';
-import './../../../database/app_db.dart';
 import './../../../infra/sessao.dart';
 import './usuario_persiste_page.dart';
 import './../../../infra/infra.dart';
 
 class UsuarioPage extends StatefulWidget {
-  final Usuario? usuarioMontado;
+  final UsuarioMontado? usuarioMontado;
   final String? title;
   final String? operacao;
 
@@ -139,13 +139,13 @@ class UsuarioPageState extends State<UsuarioPage>
                           key: const Key("tabBarViewPersistePage"),
                           formKey: _persisteFormKey,
                           scaffoldKey: _userScaffoldKey,
-                          usuario: widget.usuarioMontado,
+                          usuarioMontado: widget.usuarioMontado,
                           operacao: widget.operacao,
                           salvarProdutoCallBack: _salvarUsuario,
                         ),
                         UsuarioPermissaoListaPage(
                           key: const Key("tabBarViewPermissaoLista"),
-                          usuario: widget.usuarioMontado,
+                          usuarioMontado: widget.usuarioMontado,
                           salvarProdutoCallBack: _salvarUsuario,
                         ),
                       ],
@@ -181,26 +181,28 @@ class UsuarioPageState extends State<UsuarioPage>
 
   void _salvarUsuario() async {
     if (_salvarForms()) {
+      if (UsuarioController.listaUsuarioPermissao!.isEmpty) {
+        showInSnackBar(
+            'Ops! Você precisa informar pelo menos uma permissão para esse usuário.',
+            context);
+        return;
+      }
       gerarDialogBoxConfirmacao(context, Constantes.perguntaSalvarAlteracoes,
           () async {
         // remove pontos do NCM e do CEST
         try {
           await _showEasyLoading(true, 'Processando os dados...');
-
-          for (var permissao in UsuarioController.listaUsuarioPermissao!) {
-            // Grava as permissões
-          }
           bool tudoCerto = false;
           if (widget.operacao == 'A') {
             await Sessao.db.usuarioDao.alterar(
-              widget.usuarioMontado!,
+              widget.usuarioMontado!.usuario!,
               UsuarioController.listaUsuarioPermissao!,
             );
             tudoCerto = true;
           } else {
             var usuarioCadastrado = await Sessao.db.usuarioDao
                 .consultarObjetoFiltro(
-                    'matricula', widget.usuarioMontado!.matricula!);
+                    'matricula', widget.usuarioMontado!.usuario!.matricula!);
             if (usuarioCadastrado != null) {
               if (!mounted) return;
               showInSnackBar(
@@ -209,7 +211,8 @@ class UsuarioPageState extends State<UsuarioPage>
               return;
             }
             usuarioCadastrado = await Sessao.db.usuarioDao
-                .consultarObjetoFiltro('email', widget.usuarioMontado!.email!);
+                .consultarObjetoFiltro(
+                    'email', widget.usuarioMontado!.usuario!.email!);
             if (usuarioCadastrado != null) {
               if (!mounted) return;
               showInSnackBar(
@@ -217,7 +220,7 @@ class UsuarioPageState extends State<UsuarioPage>
                   context);
               return;
             }
-            await Sessao.db.usuarioDao.inserir(widget.usuarioMontado!,
+            await Sessao.db.usuarioDao.inserir(widget.usuarioMontado!.usuario!,
                 UsuarioController.listaUsuarioPermissao!);
             tudoCerto = true;
           }
@@ -249,7 +252,7 @@ class UsuarioPageState extends State<UsuarioPage>
 
   void _excluir() {
     gerarDialogBoxExclusao(context, () async {
-      await Sessao.db.usuarioDao.excluir(widget.usuarioMontado!);
+      await Sessao.db.usuarioDao.excluir(widget.usuarioMontado!.usuario!);
       if (!mounted) return;
       Navigator.of(context).pop();
     },

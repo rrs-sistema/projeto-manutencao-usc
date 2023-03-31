@@ -1,3 +1,4 @@
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:manutencao_usc/src/database/app_db.dart';
@@ -207,12 +208,14 @@ class UsuarioListaPageState extends State<UsuarioListaPage> {
   }
 
   void _inserir() {
+    UsuarioMontado usuarioMontado = UsuarioMontado();
+    usuarioMontado.usuario = Usuario(
+      deletado: 'N',
+    );
     Navigator.of(context)
         .push(MaterialPageRoute(
             builder: (BuildContext context) => UsuarioPage(
-                usuarioMontado: Usuario(
-                  deletado: 'N',
-                ),
+                usuarioMontado: usuarioMontado,
                 title: 'Usuário - Inserindo',
                 operacao: 'I')))
         .then((_) async {
@@ -315,7 +318,10 @@ class _ProdutoDataSource extends DataTableSource {
       }),
     );
     celulas.add(
-      DataCell(Text(produto.celular ?? ''), onTap: () {
+      DataCell(
+          Text(
+              UtilBrasilFields.obterTelefone(produto.celular ?? '00000000000')),
+          onTap: () {
         _detalharProduto(usuarioMontado, context, refrescarTela);
       }),
     );
@@ -333,7 +339,10 @@ class _ProdutoDataSource extends DataTableSource {
 }
 
 void _detalharProduto(
-    Usuario usuarioMontado, BuildContext context, Function refrescarTela) {
+    Usuario usuario, BuildContext context, Function refrescarTela) {
+  UsuarioMontado usuarioMontado = UsuarioMontado();
+  usuarioMontado.usuario = usuario;
+
   Navigator.of(context)
       .push(MaterialPageRoute(
           builder: (BuildContext context) => UsuarioPage(

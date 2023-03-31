@@ -91,30 +91,63 @@ class TabCadastros extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   const MenuTituloGrupoMenuInterno(titulo: "Cadastros Gerais"),
-                  MenuInternoBotoes(
-                    primeiroBotao: BotaoMenu(
-                        icon: FontAwesomeIcons.addressCard,
-                        label: "Categoria",
-                        circleColor: Colors.orange,
-                        rota: "/categoriaLista"),
-                    segundoBotao: BotaoMenu(
-                        // ignore: deprecated_member_use
-                        icon: FontAwesomeIcons.truckLoading,
-                        label: "Locais",
-                        circleColor: Colors.teal,
-                        rota: "/localLista"),
-                    terceiroBotao: BotaoMenu(
-                        icon: FontAwesomeIcons.objectGroup,
-                        label: "Sub local",
-                        circleColor: Colors.blueAccent,
-                        rota: "/localSubLista"),
-                    quartoBotao: BotaoMenu(
-                        icon: FontAwesomeIcons.idBadge,
-                        label: "Status da ordem de serviço",
-                        circleColor: Colors.purple,
-                        rota: "/statusOrdemServicoLista"),
-                  ),
-                  const MenuTituloGrupoMenuInterno(titulo: "Administração"),
+                  if (Biblioteca.isDesktop()) ...[
+                    MenuInternoBotoes(
+                      primeiroBotao: BotaoMenu(
+                          icon: FontAwesomeIcons.addressCard,
+                          label: "Categoria",
+                          circleColor: Colors.orange,
+                          rota: "/categoriaLista"),
+                      segundoBotao: BotaoMenu(
+                          // ignore: deprecated_member_use
+                          icon: FontAwesomeIcons.truckLoading,
+                          label: "Locais",
+                          circleColor: Colors.teal,
+                          rota: "/localLista"),
+                      terceiroBotao: BotaoMenu(
+                          icon: FontAwesomeIcons.objectGroup,
+                          label: "Sub local",
+                          circleColor: Colors.blueAccent,
+                          rota: "/localSubLista"),
+                      quartoBotao: BotaoMenu(
+                          icon: FontAwesomeIcons.idBadge,
+                          label: "Status da ordem de serviço",
+                          circleColor: Colors.purple,
+                          rota: "/statusOrdemServicoLista"),
+                    ),
+                  ],
+                  if (!Biblioteca.isDesktop()) ...[
+                    MenuInternoBotoes(
+                      primeiroBotao: BotaoMenu(
+                          icon: FontAwesomeIcons.addressCard,
+                          label: "Categoria",
+                          circleColor: Colors.orange,
+                          rota: "/categoriaLista"),
+                      segundoBotao: BotaoMenu(
+                          // ignore: deprecated_member_use
+                          icon: FontAwesomeIcons.truckLoading,
+                          label: "Locais",
+                          circleColor: Colors.teal,
+                          rota: "/localLista"),
+                      terceiroBotao: null,
+                      quartoBotao: null,
+                    ),
+                    MenuInternoBotoes(
+                      primeiroBotao: BotaoMenu(
+                          icon: FontAwesomeIcons.objectGroup,
+                          label: "Sub local",
+                          circleColor: Colors.blueAccent,
+                          rota: "/localSubLista"),
+                      segundoBotao: BotaoMenu(
+                          icon: FontAwesomeIcons.idBadge,
+                          label: "Status OS",
+                          circleColor: Colors.purple,
+                          rota: "/statusOrdemServicoLista"),
+                      terceiroBotao: null,
+                      quartoBotao: null,
+                    ),
+                  ],
+                  const MenuTituloGrupoMenuInterno(titulo: "Perfio de usuário"),
                   MenuInternoBotoes(
                     primeiroBotao: BotaoMenu(
                         icon: FontAwesomeIcons.graduationCap,

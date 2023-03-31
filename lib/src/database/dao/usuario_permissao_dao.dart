@@ -91,6 +91,12 @@ class UsuarioPermissaoDao extends DatabaseAccessor<AppDb>
     });
   }
 
+  Future<void> excluirCodigo(int codigo) {
+    return transaction(() async {
+      (delete(usuarioPermissaos)..where((t) => t.codigo.equals(codigo))).go();
+    });
+  }
+
   static List<String> campos = <String>[
     'codigo',
     'codigo_usuario',

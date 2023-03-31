@@ -707,6 +707,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.1.0"
+  pin_code_fields:
+    dependency: "direct main"
+    description:
+      name: pin_code_fields
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "7.4.0"
   platform:
     dependency: transitive
     description:
@@ -861,6 +868,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  simple_animations:
+    dependency: "direct main"
+    description:
+      name: simple_animations
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.2.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -929,6 +943,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.1"
+  supercharged:
+    dependency: "direct main"
+    description:
+      name: supercharged
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.1"
+  supercharged_dart:
+    dependency: transitive
+    description:
+      name: supercharged_dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.1"
   term_glyph:
     dependency: transitive
     description:

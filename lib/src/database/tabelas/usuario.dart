@@ -23,10 +23,8 @@ class Usuarios extends Table {
 
 class UsuarioMontado {
   Usuario? usuario;
-  List<UsuarioPermissao>? listaPermissao = [];
 
   UsuarioMontado({
     this.usuario,
-    this.listaPermissao,
   });
 }

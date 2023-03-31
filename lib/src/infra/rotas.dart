@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manutencao_usc/src/view/usuario/login/login_screen.dart';
 
 import './../view/cadastros/status_ordem_servico/status_ordem_servico_lista_page.dart';
 import './../view/cadastros/permissao/permissao_lista_page.dart';
@@ -38,6 +39,8 @@ class Rotas {
       case '/usuarioLista':
         return MaterialPageRoute(
             builder: (context) => const UsuarioListaPage());
+      case '/login':
+        return MaterialPageRoute(builder: (context) => const LoginScreen());
       // default
       default:
         return MaterialPageRoute(
@@ -65,6 +68,8 @@ class Rotas {
         return const UsuarioListaPage();
       case '/permissaoLista':
         return const PermissaoListaPage();
+      case '/login':
+        return const LoginScreen();
       default:
         null;
     }

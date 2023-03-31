@@ -2,6 +2,7 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:backdrop/backdrop.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 import './../ordem_servico/ordem_servico_persiste_page.dart';
@@ -236,7 +237,12 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
                                 sortAscending: _sortAscending,
                                 columns: <DataColumn>[
                                   DataColumn(
-                                    label: const Text('Status da OS'),
+                                    label: const Center(
+                                      child: Text(
+                                        'Status',
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
                                     tooltip: 'Status da ordem de serviço',
                                     onSort: (int columnIndex, bool ascending) =>
                                         _sort<String>(
@@ -388,12 +394,12 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
                 corFundo: Colors.blue.shade100,
               ),
               getItemResumoValor(
-                descricao: 'Total Pendente: ',
+                descricao: 'Total em andamento: ',
                 valor: '$_totaEmAndamento',
                 corFundo: Colors.red.shade100,
               ),
               getItemResumoValor(
-                descricao: 'Total Atendida: ',
+                descricao: 'Total finalizada: ',
                 valor: '$_totaFinalizada',
                 corFundo: Colors.green.shade100,
               ),
@@ -530,20 +536,39 @@ class _OrdemServicoDataSource extends DataTableSource {
     OrdemServicoMontada ordemServicoMontado = listaOrdensServico![index];
     final OrdemServico ordemServico = ordemServicoMontado.ordemServico!;
     final Usuario usuario = ordemServicoMontado.usuario!;
+    final StatusOrdemServico status = ordemServicoMontado.statusOrdemServico!;
+
+    Icon iconSituacao = const Icon(
+      FontAwesomeIcons.circleCheck,
+      color: Colors.red,
+    );
+
+    if (status.nome!.toLowerCase().contains('finalizado')) {
+      iconSituacao = const Icon(
+        FontAwesomeIcons.squareCheck,
+        color: Colors.green, //check-square-o
+      );
+    }
+    if (status.nome!.toLowerCase().contains('andamento')) {
+      iconSituacao = const Icon(
+        FontAwesomeIcons.circlePlay,
+        color: Colors.blue,
+      );
+    }
+
     return DataRow.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(ordemServicoMontado.statusOrdemServico!.nome ?? ''),
-            onTap: () {
+        DataCell(Center(child: iconSituacao), onTap: () {
           _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
         }),
-        DataCell(Text(ordemServicoMontado.categoria!.nome ?? ''), onTap: () {
+        DataCell(Text(ordemServicoMontado.categoria?.nome ?? ''), onTap: () {
           _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
         }),
-        DataCell(Text(ordemServicoMontado.local!.nome ?? ''), onTap: () {
+        DataCell(Text(ordemServicoMontado.local?.nome ?? ''), onTap: () {
           _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
         }),
-        DataCell(Text(ordemServicoMontado.localSub!.nome ?? ''), onTap: () {
+        DataCell(Text(ordemServicoMontado.localSub?.nome ?? ''), onTap: () {
           _detalharOdemServico(ordemServicoMontado, context, refrescarTela);
         }),
         DataCell(

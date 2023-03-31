@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_bootstrap/flutter_bootstrap.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:manutencao_usc/src/database/app_db.dart';
 import 'package:manutencao_usc/src/database/dao/local_dao.dart';
 import 'package:manutencao_usc/src/database/dao/local_sub_dao.dart';
 import 'package:manutencao_usc/src/view/shared/botoes.dart';
@@ -48,6 +49,16 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final ScrollController controllerScroll = ScrollController();
+  final importaCategoriaController = TextEditingController();
+  final importaLocalController = TextEditingController();
+  final importaCodigoLocalController = TextEditingController();
+  final importaLocalSubController = TextEditingController();
+  final importaStatusController = TextEditingController();
+  OrdemServico? _ordemServico;
+  Categoria? _categoria;
+  Local? _local;
+  LocalSub? _localSub;
+  StatusOrdemServico? _status;
 
   @override
   void initState() {
@@ -61,12 +72,21 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
         onInvoke: _tratarAcoesAtalhos,
       ),
     };
+    _ordemServico = widget.ordemServicoMontado?.ordemServico;
+    _categoria = widget.ordemServicoMontado?.categoria;
+    _local = widget.ordemServicoMontado?.local;
+    _localSub = widget.ordemServicoMontado?.localSub;
+    _status = widget.ordemServicoMontado?.statusOrdemServico;
 
     _foco.requestFocus();
     if (controllerScroll.hasClients) {
       controllerScroll.jumpTo(50.0);
     }
-    //WidgetsBinding.instance.addPostFrameCallback((_) => _carregarImagens());
+    importaCategoriaController.text = _categoria?.nome ?? '';
+    importaLocalController.text = _local?.nome ?? '';
+    importaCodigoLocalController.text = _local?.codigo.toString() ?? '';
+    importaLocalSubController.text = _localSub?.nome ?? '';
+    importaStatusController.text = _status?.nome ?? '';
   }
 
   void _tratarAcoesAtalhos(AtalhoTelaIntent intent) {
@@ -91,12 +111,9 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
           await _showEasyLoading(true, 'Processando os dados...');
           try {
             if (widget.operacao == 'A') {
-              await Sessao.db.ordemServicoDao
-                  .alterar(widget.ordemServicoMontado!);
+              await Sessao.db.ordemServicoDao.alterar(_ordemServico!);
             } else {
-              await Sessao.db.ordemServicoDao.inserir(
-                widget.ordemServicoMontado!,
-              );
+              await Sessao.db.ordemServicoDao.inserir(_ordemServico!);
             }
             if (!mounted) return;
             Navigator.of(context).pop();
@@ -121,7 +138,7 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
 
   void _excluir() {
     gerarDialogBoxExclusao(context, () async {
-      await Sessao.db.ordemServicoDao.excluir(widget.ordemServicoMontado!);
+      await Sessao.db.ordemServicoDao.excluir(_ordemServico!);
       if (!mounted) return;
       Navigator.of(context).pop();
     }, mensagemPersonalizada: 'Deseja marcar essa ordem de serviço como?');
@@ -129,31 +146,19 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
 
   @override
   Widget build(BuildContext context) {
-    final importaCategoriaController = TextEditingController();
-    importaCategoriaController.text =
-        widget.ordemServicoMontado?.categoria?.nome ?? '';
-    final importaLocalController = TextEditingController();
-    importaLocalController.text = widget.ordemServicoMontado?.local?.nome ?? '';
-
-    final importaCodigoLocalController = TextEditingController();
-    importaCodigoLocalController.text =
-        widget.ordemServicoMontado?.local?.codigo.toString() ?? '';
-
-    final importaLocalSubController = TextEditingController();
-    importaLocalSubController.text =
-        widget.ordemServicoMontado?.localSub?.nome ?? '';
-
-    final importaStatusController = TextEditingController();
-    importaStatusController.text =
-        widget.ordemServicoMontado?.statusOrdemServico?.nome ?? '';
-
     return FocusableActionDetector(
       actions: _actionMap,
       shortcuts: _shortcutMap,
       child: Focus(
         child: Scaffold(
           appBar: AppBar(
-            title: Text(widget.title!),
+            title: Text(widget.title!,
+                style: TextStyle(
+                    fontSize: Biblioteca.isDesktop()
+                        ? 22
+                        : widget.operacao == 'I'
+                            ? 16
+                            : 12)),
             centerTitle:
                 Biblioteca.isTelaPequena(context) == true ? true : false,
             actions: widget.operacao == 'I'
@@ -209,7 +214,7 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                     controller: importaCategoriaController,
                                     readOnly: true,
                                     decoration: getInputDecoration(
-                                        'Conteúdo para o campo Categoria',
+                                        'Conteúdo para o campo categoria',
                                         'Categoria *',
                                         false),
                                     onSaved: (String? value) {},
@@ -250,27 +255,19 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                                 fullscreenDialog: true,
                                               ));
                                       if (objetoJsonRetorno != null) {
-                                        if (objetoJsonRetorno['nome'] != null) {
-                                          importaCategoriaController.text =
-                                              objetoJsonRetorno['nome'];
+                                        setState(() {
+                                          if (objetoJsonRetorno['nome'] !=
+                                              null) {
+                                            importaCategoriaController.text =
+                                                objetoJsonRetorno['nome'];
 
-                                          widget.ordemServicoMontado!
-                                                  .ordemServico =
-                                              widget.ordemServicoMontado!
-                                                  .ordemServico!
-                                                  .copyWith(
-                                                      codigoCategoria:
-                                                          objetoJsonRetorno[
-                                                              'codigo']);
-
-                                          widget.ordemServicoMontado!
-                                                  .categoria =
-                                              widget.ordemServicoMontado!
-                                                  .categoria!
-                                                  .copyWith(
-                                            nome: objetoJsonRetorno['nome'],
-                                          );
-                                        }
+                                            _ordemServico = _ordemServico!
+                                                .copyWith(
+                                                    codigoCategoria:
+                                                        objetoJsonRetorno[
+                                                            'codigo']);
+                                          }
+                                        });
                                       }
                                     },
                                   ),
@@ -287,7 +284,9 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                         height: 60,
                         children: <BootstrapCol>[
                           BootstrapCol(
-                            sizes: 'col-12 col-md-6',
+                            sizes: Biblioteca.isMobile()
+                                ? 'col-12'
+                                : 'col-12 col-md-6',
                             child: Row(
                               children: <Widget>[
                                 Expanded(
@@ -341,33 +340,20 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                               ));
                                       if (objetoJsonRetorno != null) {
                                         if (objetoJsonRetorno['nome'] != null) {
-                                          widget.ordemServicoMontado!
-                                                  .ordemServico =
-                                              widget.ordemServicoMontado!
-                                                  .ordemServico!
-                                                  .copyWith(
-                                                      codigoLocal:
-                                                          objetoJsonRetorno[
-                                                              'codigo']);
-
-                                          widget.ordemServicoMontado!.local =
-                                              widget.ordemServicoMontado!.local!
-                                                  .copyWith(
-                                            nome: objetoJsonRetorno['nome'],
-                                          );
+                                          _ordemServico = _ordemServico!
+                                              .copyWith(
+                                                  codigoLocal:
+                                                      objetoJsonRetorno[
+                                                          'codigo']);
 
                                           setState(() {
                                             importaLocalController.text =
                                                 objetoJsonRetorno['nome'];
-                                            widget.ordemServicoMontado!.local =
-                                                widget
-                                                    .ordemServicoMontado!.local!
-                                                    .copyWith(
-                                                        codigo:
-                                                            objetoJsonRetorno[
-                                                                'codigo'],
-                                                        nome: objetoJsonRetorno[
-                                                            'nome']);
+                                            _local = _local!.copyWith(
+                                                codigo:
+                                                    objetoJsonRetorno['codigo'],
+                                                nome:
+                                                    objetoJsonRetorno['nome']);
                                             importaCodigoLocalController.text =
                                                 objetoJsonRetorno['codigo']
                                                     .toString();
@@ -380,8 +366,17 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                               ],
                             ),
                           ),
+                          if (Biblioteca.isMobile()) ...[
+                            BootstrapCol(
+                              child: const Divider(
+                                color: Colors.white,
+                              ),
+                            )
+                          ],
                           BootstrapCol(
-                            sizes: 'col-12 col-md-6',
+                            sizes: Biblioteca.isMobile()
+                                ? 'col-12'
+                                : 'col-12 col-md-6',
                             child: Row(
                               children: <Widget>[
                                 Expanded(
@@ -417,7 +412,7 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                                     (BuildContext context) =>
                                                         LookupLocalPage(
                                                   title:
-                                                      'Importar local de ${widget.ordemServicoMontado!.local!.nome}',
+                                                      'Importar local de ${_local?.nome}',
                                                   colunas: LocalSubDao.colunas,
                                                   campos: LocalSubDao.campos,
                                                   campoPesquisaPadrao:
@@ -443,21 +438,11 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                           importaLocalSubController.text =
                                               objetoJsonRetorno['nome'];
 
-                                          widget.ordemServicoMontado!
-                                                  .ordemServico =
-                                              widget.ordemServicoMontado!
-                                                  .ordemServico!
-                                                  .copyWith(
-                                                      codigoSubLocal:
-                                                          objetoJsonRetorno[
-                                                              'codigo']);
-
-                                          widget.ordemServicoMontado!.localSub =
-                                              widget.ordemServicoMontado!
-                                                  .localSub!
-                                                  .copyWith(
-                                            nome: objetoJsonRetorno['nome'],
-                                          );
+                                          _ordemServico = _ordemServico!
+                                              .copyWith(
+                                                  codigoSubLocal:
+                                                      objetoJsonRetorno[
+                                                          'codigo']);
                                         }
                                       }
                                     },
@@ -538,22 +523,11 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                             importaStatusController.text =
                                                 objetoJsonRetorno['nome'];
 
-                                            widget.ordemServicoMontado!
-                                                    .ordemServico =
-                                                widget.ordemServicoMontado!
-                                                    .ordemServico!
-                                                    .copyWith(
-                                                        codigoStatus:
-                                                            objetoJsonRetorno[
-                                                                'codigo']);
-
-                                            widget.ordemServicoMontado!
-                                                    .statusOrdemServico =
-                                                widget.ordemServicoMontado!
-                                                    .statusOrdemServico!
-                                                    .copyWith(
-                                              nome: objetoJsonRetorno['nome'],
-                                            );
+                                            _ordemServico = _ordemServico!
+                                                .copyWith(
+                                                    codigoStatus:
+                                                        objetoJsonRetorno[
+                                                            'codigo']);
                                           }
                                         }
                                       },
@@ -578,22 +552,19 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                                   .validarObrigatorioTestoLongo,
                               maxLength: 250,
                               maxLines: 3,
-                              initialValue: widget.ordemServicoMontado!
-                                      .ordemServico?.descricaoProblema ??
-                                  '',
+                              initialValue:
+                                  _ordemServico?.descricaoProblema ?? '',
                               decoration: getInputDecoration(
                                   'Conteúdo para o campo descrição do problema',
                                   'Descrição do problema *',
                                   false),
                               onSaved: (String? value) {},
                               onChanged: (text) {
-                                widget.ordemServicoMontado!.ordemServico =
-                                    widget
-                                        .ordemServicoMontado!.ordemServico!
-                                        .copyWith(
-                                            descricaoProblema:
-                                                removeCaracteresEspeciais(
-                                                    text));
+                                setState(() {
+                                  _ordemServico = _ordemServico!.copyWith(
+                                      descricaoProblema:
+                                          removeCaracteresEspeciais(text));
+                                });
                               },
                             ),
                           ),
@@ -611,22 +582,17 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
                               child: TextFormField(
                                 maxLength: 250,
                                 maxLines: 3,
-                                initialValue: widget.ordemServicoMontado!
-                                        .ordemServico?.descricaoSolucao ??
-                                    '',
+                                initialValue:
+                                    _ordemServico?.descricaoSolucao ?? '',
                                 decoration: getInputDecoration(
                                     'Conteúdo para o campo solução do problema',
                                     'Solução do problema',
                                     false),
                                 onSaved: (String? value) {},
                                 onChanged: (text) {
-                                  widget.ordemServicoMontado!.ordemServico =
-                                      widget
-                                          .ordemServicoMontado!.ordemServico!
-                                          .copyWith(
-                                              descricaoSolucao:
-                                                  removeCaracteresEspeciais(
-                                                      text));
+                                  _ordemServico = _ordemServico!.copyWith(
+                                      descricaoSolucao:
+                                          removeCaracteresEspeciais(text));
                                 },
                               ),
                             ),
@@ -677,7 +643,7 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
 
   void _filtrarSubLocalLookup(String campo, String valor) async {
     final listaFiltrada = await Sessao.db.localSubDao.consultarListaFiltro(
-        'codigo_local', widget.ordemServicoMontado!.local!.codigo.toString());
+        'codigo_local', importaCodigoLocalController.text.toString());
     Sessao.retornoJsonLookup = jsonEncode(listaFiltrada);
   }
 

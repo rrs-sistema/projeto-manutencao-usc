@@ -1,5 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:manutencao_usc/src/view/home_page.dart';
+import 'package:manutencao_usc/src/view/shared/caixas_de_dialogo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import './../view/ordem_servico/ordem_servico_persiste_page.dart';
 import './../view/menu/menu_titulo_grupo_menu_interno.dart';
@@ -19,7 +23,11 @@ class TabHome extends StatefulWidget {
 }
 
 class _TabHomeState extends State<TabHome> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   OrdemServico lastOrdeService = OrdemServico();
+  String descricaoOs = 'Ordem de Serviço não localizada';
+
+  get onSelectedPopupMenuButton => null;
 
   @override
   void initState() {
@@ -27,8 +35,70 @@ class _TabHomeState extends State<TabHome> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _getLastOrdeService());
   }
 
+  Future _executarFuncaoMenuButtonGeral(String operacao) async {
+    if (operacao == 'sair_aplicacao') {
+      gerarDialogBoxConfirmacao(context, 'Deseja sair da aplicação?', () async {
+        final SharedPreferences prefs = await _prefs;
+        dynamic codigo = prefs.get('codigoUsuario');
+        if (codigo != null) {
+          if (!mounted) return;
+          await prefs.remove('codigoUsuario');
+          await prefs.remove('nomeUsuario');
+          await prefs.remove('emailUsuario');
+          if (!mounted) return;
+          Navigator.pop(context);
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return const HomePage();
+          }));
+        }
+      });
+    }
+  }
+
+  PopupMenuButton<String> _getPopupMenuGeral(
+      Function(String) onSelectedPopupMenuButton) {
+    return PopupMenuButton<String>(
+        onSelected: onSelectedPopupMenuButton,
+        itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
+              PopupMenuItem<String>(
+                value: 'sair_aplicacao',
+                child: SizedBox(
+                  height: 15.0,
+                  child: Row(
+                    children: const [
+                      Icon(
+                        FontAwesomeIcons.userClock,
+                        color: Colors.purple,
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Text(
+                        ' Sair',
+                        style: TextStyle(
+                            decorationColor: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ]);
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (lastOrdeService.descricaoProblema != null) {
+      if (Biblioteca.isMobile() &&
+          lastOrdeService.descricaoProblema!.length > 25) {
+        descricaoOs =
+            '${lastOrdeService.descricaoProblema!.substring(0, 25)}...';
+      } else {
+        descricaoOs = lastOrdeService.descricaoProblema!;
+      }
+    }
+
     bool? telaPequena = Biblioteca.isTelaPequena(context);
     return Scaffold(
       appBar: AppBar(
@@ -39,6 +109,9 @@ class _TabHomeState extends State<TabHome> {
             gradient: gradienteApp(),
           ),
         ),
+        actions: [
+          _getPopupMenuGeral(_executarFuncaoMenuButtonGeral),
+        ],
       ),
       backgroundColor: Constantes.secondaryColor,
       body: Stack(
@@ -251,9 +324,7 @@ class _TabHomeState extends State<TabHome> {
                                                     children: [
                                                       SizedBox(
                                                         height: 20.0,
-                                                        child: Text(
-                                                            '${lastOrdeService.codigo != null ? lastOrdeService.descricaoProblema : 'Ordem de Serviço não cadastrada'}',
-                                                            softWrap: true,
+                                                        child: Text(descricaoOs,
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis,
@@ -339,8 +410,9 @@ class _TabHomeState extends State<TabHome> {
   Future _getLastOrdeService() async {
     var ultimaOs = await Sessao.db.ordemServicoDao.pegaUltimaOrdemServico();
     if (ultimaOs != null) {
-      lastOrdeService = ultimaOs;
+      setState(() {
+        lastOrdeService = ultimaOs;
+      });
     }
-    setState(() {});
   }
 }

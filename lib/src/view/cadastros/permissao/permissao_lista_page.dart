@@ -97,7 +97,7 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
           drawerDragStartBehavior: DragStartBehavior.down,
           key: _scaffoldKey,
           appBar: AppBar(
-            title: const Text('Cadastro - Permissao'),
+            title: const Text('Cadastro - Permissão'),
             centerTitle: telaPequena! ? true : false,
             actions: const <Widget>[],
             flexibleSpace: Container(
@@ -152,13 +152,13 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
 
   List<DataColumn> _pegarColunas(Function sort) {
     final List<DataColumn> colunas = [];
-    colunas.add(
-      DataColumn(
-          label: const Text('Nome'),
-          tooltip: 'Conteúdo para o campo nome',
-          onSort: (int columnIndex, bool ascending) => sort<String>(
-              (Permissao obj) => obj.nome, columnIndex, ascending)),
-    );
+    // colunas.add(
+    //   DataColumn(
+    //       label: const Text('Nome'),
+    //       tooltip: 'Conteúdo para o campo nome',
+    //       onSort: (int columnIndex, bool ascending) => sort<String>(
+    //           (Permissao obj) => obj.nome, columnIndex, ascending)),
+    // );
     colunas.add(
       DataColumn(
           label: const Text('Descrição'),
@@ -237,7 +237,7 @@ class _PermissaoDataSource extends DataTableSource {
     return DataRow.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(permissao.nome ?? '')),
+        //DataCell(Text(permissao.nome ?? '')),
         DataCell(Text(permissao.descricao ?? '')),
       ],
     );

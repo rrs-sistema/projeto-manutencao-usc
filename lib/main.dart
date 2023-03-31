@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:catcher/catcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // ignore: depend_on_referenced_packages
 import 'package:sqlite3/open.dart';
 import 'dart:ffi' hide Size;

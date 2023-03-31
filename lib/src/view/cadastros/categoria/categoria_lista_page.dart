@@ -139,8 +139,9 @@ class CategoriaListaPageState extends State<CategoriaListaPage> {
                           Constantes.paddingListViewListaPage),
                       children: <Widget>[
                         PaginatedDataTable(
-                          header: const Text(
-                              'Relação - Categoria da Ordem de Serviço'),
+                          header: Text(Biblioteca.isDesktop()
+                              ? 'Relação - Categoria da Ordem de Serviço'
+                              : 'Relação - Categoria da OS'),
                           rowsPerPage: _rowsPerPage!,
                           onRowsPerPageChanged: (int? value) {
                             setState(() {

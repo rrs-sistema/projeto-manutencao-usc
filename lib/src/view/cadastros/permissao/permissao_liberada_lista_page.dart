@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:manutencao_usc/src/database/tabelas/usuario.dart';
 
 import './../../../view/cadastros/permissao/permissao_padrao_lookup_page.dart';
 import './../../../database/tabelas/usuario_permissao.dart';
@@ -10,12 +11,12 @@ import './../../../infra/constantes.dart';
 import './../../../database/app_db.dart';
 
 class UsuarioPermissaoListaPage extends StatefulWidget {
-  final Usuario? usuario;
+  final UsuarioMontado? usuarioMontado;
   final FocusNode? foco;
   final Function? salvarProdutoCallBack;
 
   const UsuarioPermissaoListaPage(
-      {Key? key, this.usuario, this.foco, this.salvarProdutoCallBack})
+      {Key? key, this.usuarioMontado, this.foco, this.salvarProdutoCallBack})
       : super(key: key);
 
   @override
@@ -91,7 +92,7 @@ class UsuarioPermissaoListaPageState extends State<UsuarioPermissaoListaPage> {
                     color: Colors.black,
                   ),
                   Text(
-                    'Permissões do(a) usuario(a): ${widget.usuario?.nome ?? ''}',
+                    'Permissões do(a) usuario(a): ${widget.usuarioMontado?.usuario?.nome ?? ''}',
                     style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 18.0,
@@ -131,7 +132,7 @@ class UsuarioPermissaoListaPageState extends State<UsuarioPermissaoListaPage> {
         UsuarioPermissaoMontado userPermission = UsuarioPermissaoMontado();
         userPermission.permissao = retorno[i];
         userPermission.usuario = Usuario();
-        userPermission.usuario = widget.usuario;
+        userPermission.usuario = widget.usuarioMontado?.usuario;
         UsuarioController.listaUsuarioPermissao!.add(userPermission);
       }
     }
