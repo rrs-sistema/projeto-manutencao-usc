@@ -1,3 +1,9 @@
+import 'package:manutencao_usc/src/database/dao/colaborador_dao.dart';
+import 'package:manutencao_usc/src/database/dao/colaborador_funcao_dao.dart';
+import 'package:manutencao_usc/src/database/dao/funcao_dao.dart';
+import 'package:manutencao_usc/src/database/tabelas/colaborador.dart';
+import 'package:manutencao_usc/src/database/tabelas/colaborador_funcao.dart';
+import 'package:manutencao_usc/src/database/tabelas/funcao.dart';
 import 'package:path_provider/path_provider.dart' as paths;
 import 'package:path/path.dart' as p;
 import 'package:drift/native.dart';
@@ -56,7 +62,10 @@ LazyDatabase _opeConnection() {
   StatusOrdemServicos,
   Usuarios,
   Permissaos,
-  UsuarioPermissaos
+  UsuarioPermissaos,
+  Colaboradors,
+  ColaboradorFuncaos,
+  Funcaos,
 ], daos: [
   OrdemServicoDao,
   LocalDao,
@@ -65,7 +74,10 @@ LazyDatabase _opeConnection() {
   StatusOrdemServicoDao,
   UsuarioDao,
   PermissaoDao,
-  UsuarioPermissaoDao
+  UsuarioPermissaoDao,
+  FuncaoDao,
+  ColaboradorDao,
+  ColaboradorFuncaoDao
 ])
 class AppDb extends _$AppDb {
   AppDb() : super(_opeConnection());
@@ -87,7 +99,7 @@ class AppDb extends _$AppDb {
       );
 
   Future<void> _popularBanco(AppDb db) async {
-    var senha = Biblioteca.cifrar("53111");
+    var senha = Biblioteca.cifrar("153111");
     await db.customStatement(
         "INSERT INTO tb_usuario (codigo, matricula, nome, email, celular, senha, deletado) "
         "VALUES (1, '100001720212', 'Rivaldo Roberto', 'rivaldo.roberto@outlook.com', '41984221805', '$senha', 'N')");
@@ -121,6 +133,7 @@ class AppDb extends _$AppDb {
         "INSERT INTO tb_local_sub (codigo_local, nome) VALUES (3, 'Sala dos professores')");
     await db.customStatement(
         "INSERT INTO tb_local_sub (codigo_local, nome) VALUES (3, 'Cozinha')");
+
     // DADOS INICIAIS DA TABELA DE CATEGORIAS
     await db.customStatement(
         "INSERT INTO tb_categoria (codigo, nome) VALUES (1, 'Eletrica')");
@@ -149,6 +162,7 @@ class AppDb extends _$AppDb {
         "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_DELETAR_CATEGORIA', 'Permissão para deletar as categorias')");
     await db.customStatement(
         "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_PESQUISAR_CATEGORIA', 'Permissão para pesquisar as categorias')");
+
     //Dados da tabela de PERMISSAO PARA: area/local/sublocal
     await db.customStatement(
         "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_CADASTRAR_LOCAL', 'Permissão para cadastrar áreas, local, sublocal')");

@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:catcher/catcher.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 // ignore: depend_on_referenced_packages
 import 'package:sqlite3/open.dart';
 import 'dart:ffi' hide Size;
@@ -36,14 +35,14 @@ void main() async {
 
   ///Inicia o Catcher e então inicia a aplicação.
   ///O Catcher vai pegar e reportar os erros de forma global
-  /*
   Catcher(
-    runAppFunction: () {},
+    runAppFunction: () {
+      runApp(const UscApp());
+    },
     debugConfig: Constantes.debugOptionsPagina,
     releaseConfig: Constantes.releaseOptionsPagina,
   );
-  */
-  runApp(const MyApp());
+  //runApp(const UscApp());
   configLoading();
 }
 
@@ -76,14 +75,14 @@ void configLoading() {
     ..customAnimation = CustomAnimation();
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+class UscApp extends StatefulWidget {
+  const UscApp({Key? key}) : super(key: key);
 
   @override
-  MyAppState createState() => MyAppState();
+  UscAppState createState() => UscAppState();
 }
 
-class MyAppState extends State<MyApp> {
+class UscAppState extends State<UscApp> {
   @override
   Widget build(BuildContext context) {
     return Provider<AppDb>(

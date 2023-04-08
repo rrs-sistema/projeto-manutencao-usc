@@ -729,8 +729,7 @@ class LocalSub extends DataClass implements Insertable<LocalSub> {
   final int? codigo;
   final int? codigoLocal;
   final String? nome;
-  final String? descricao;
-  LocalSub({this.codigo, this.codigoLocal, this.nome, this.descricao});
+  LocalSub({this.codigo, this.codigoLocal, this.nome});
   factory LocalSub.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return LocalSub(
@@ -740,8 +739,6 @@ class LocalSub extends DataClass implements Insertable<LocalSub> {
           .mapFromDatabaseResponse(data['${effectivePrefix}codigo_local']),
       nome: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}nome']),
-      descricao: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}descricao']),
     );
   }
   @override
@@ -756,9 +753,6 @@ class LocalSub extends DataClass implements Insertable<LocalSub> {
     if (!nullToAbsent || nome != null) {
       map['nome'] = Variable<String?>(nome);
     }
-    if (!nullToAbsent || descricao != null) {
-      map['descricao'] = Variable<String?>(descricao);
-    }
     return map;
   }
 
@@ -770,9 +764,6 @@ class LocalSub extends DataClass implements Insertable<LocalSub> {
           ? const Value.absent()
           : Value(codigoLocal),
       nome: nome == null && nullToAbsent ? const Value.absent() : Value(nome),
-      descricao: descricao == null && nullToAbsent
-          ? const Value.absent()
-          : Value(descricao),
     );
   }
 
@@ -783,7 +774,6 @@ class LocalSub extends DataClass implements Insertable<LocalSub> {
       codigo: serializer.fromJson<int?>(json['codigo']),
       codigoLocal: serializer.fromJson<int?>(json['codigoLocal']),
       nome: serializer.fromJson<String?>(json['nome']),
-      descricao: serializer.fromJson<String?>(json['descricao']),
     );
   }
   @override
@@ -793,82 +783,67 @@ class LocalSub extends DataClass implements Insertable<LocalSub> {
       'codigo': serializer.toJson<int?>(codigo),
       'codigoLocal': serializer.toJson<int?>(codigoLocal),
       'nome': serializer.toJson<String?>(nome),
-      'descricao': serializer.toJson<String?>(descricao),
     };
   }
 
-  LocalSub copyWith(
-          {int? codigo, int? codigoLocal, String? nome, String? descricao}) =>
-      LocalSub(
+  LocalSub copyWith({int? codigo, int? codigoLocal, String? nome}) => LocalSub(
         codigo: codigo ?? this.codigo,
         codigoLocal: codigoLocal ?? this.codigoLocal,
         nome: nome ?? this.nome,
-        descricao: descricao ?? this.descricao,
       );
   @override
   String toString() {
     return (StringBuffer('LocalSub(')
           ..write('codigo: $codigo, ')
           ..write('codigoLocal: $codigoLocal, ')
-          ..write('nome: $nome, ')
-          ..write('descricao: $descricao')
+          ..write('nome: $nome')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(codigo, codigoLocal, nome, descricao);
+  int get hashCode => Object.hash(codigo, codigoLocal, nome);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is LocalSub &&
           other.codigo == this.codigo &&
           other.codigoLocal == this.codigoLocal &&
-          other.nome == this.nome &&
-          other.descricao == this.descricao);
+          other.nome == this.nome);
 }
 
 class LocalSubsCompanion extends UpdateCompanion<LocalSub> {
   final Value<int?> codigo;
   final Value<int?> codigoLocal;
   final Value<String?> nome;
-  final Value<String?> descricao;
   const LocalSubsCompanion({
     this.codigo = const Value.absent(),
     this.codigoLocal = const Value.absent(),
     this.nome = const Value.absent(),
-    this.descricao = const Value.absent(),
   });
   LocalSubsCompanion.insert({
     this.codigo = const Value.absent(),
     this.codigoLocal = const Value.absent(),
     this.nome = const Value.absent(),
-    this.descricao = const Value.absent(),
   });
   static Insertable<LocalSub> custom({
     Expression<int?>? codigo,
     Expression<int?>? codigoLocal,
     Expression<String?>? nome,
-    Expression<String?>? descricao,
   }) {
     return RawValuesInsertable({
       if (codigo != null) 'codigo': codigo,
       if (codigoLocal != null) 'codigo_local': codigoLocal,
       if (nome != null) 'nome': nome,
-      if (descricao != null) 'descricao': descricao,
     });
   }
 
   LocalSubsCompanion copyWith(
-      {Value<int?>? codigo,
-      Value<int?>? codigoLocal,
-      Value<String?>? nome,
-      Value<String?>? descricao}) {
+      {Value<int?>? codigo, Value<int?>? codigoLocal, Value<String?>? nome}) {
     return LocalSubsCompanion(
       codigo: codigo ?? this.codigo,
       codigoLocal: codigoLocal ?? this.codigoLocal,
       nome: nome ?? this.nome,
-      descricao: descricao ?? this.descricao,
     );
   }
 
@@ -884,9 +859,6 @@ class LocalSubsCompanion extends UpdateCompanion<LocalSub> {
     if (nome.present) {
       map['nome'] = Variable<String?>(nome.value);
     }
-    if (descricao.present) {
-      map['descricao'] = Variable<String?>(descricao.value);
-    }
     return map;
   }
 
@@ -895,8 +867,7 @@ class LocalSubsCompanion extends UpdateCompanion<LocalSub> {
     return (StringBuffer('LocalSubsCompanion(')
           ..write('codigo: $codigo, ')
           ..write('codigoLocal: $codigoLocal, ')
-          ..write('nome: $nome, ')
-          ..write('descricao: $descricao')
+          ..write('nome: $nome')
           ..write(')'))
         .toString();
   }
@@ -931,15 +902,8 @@ class $LocalSubsTable extends LocalSubs
           GeneratedColumn.checkTextLength(minTextLength: 3, maxTextLength: 180),
       type: const StringType(),
       requiredDuringInsert: false);
-  final VerificationMeta _descricaoMeta = const VerificationMeta('descricao');
   @override
-  late final GeneratedColumn<String?> descricao = GeneratedColumn<String?>(
-      'descricao', aliasedName, true,
-      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 255),
-      type: const StringType(),
-      requiredDuringInsert: false);
-  @override
-  List<GeneratedColumn> get $columns => [codigo, codigoLocal, nome, descricao];
+  List<GeneratedColumn> get $columns => [codigo, codigoLocal, nome];
   @override
   String get aliasedName => _alias ?? 'tb_local_sub';
   @override
@@ -962,10 +926,6 @@ class $LocalSubsTable extends LocalSubs
     if (data.containsKey('nome')) {
       context.handle(
           _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
-    }
-    if (data.containsKey('descricao')) {
-      context.handle(_descricaoMeta,
-          descricao.isAcceptableOrUnknown(data['descricao']!, _descricaoMeta));
     }
     return context;
   }
@@ -2176,6 +2136,759 @@ class $UsuarioPermissaosTable extends UsuarioPermissaos
   }
 }
 
+class Colaborador extends DataClass implements Insertable<Colaborador> {
+  final int? codigo;
+  final String? matricula;
+  final String? nome;
+  final DateTime? dataAdmissao;
+  final String? ativo;
+  Colaborador(
+      {this.codigo, this.matricula, this.nome, this.dataAdmissao, this.ativo});
+  factory Colaborador.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return Colaborador(
+      codigo: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
+      matricula: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}matricula']),
+      nome: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}nome']),
+      dataAdmissao: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}data_admissao']),
+      ativo: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}ativo']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || codigo != null) {
+      map['codigo'] = Variable<int?>(codigo);
+    }
+    if (!nullToAbsent || matricula != null) {
+      map['matricula'] = Variable<String?>(matricula);
+    }
+    if (!nullToAbsent || nome != null) {
+      map['nome'] = Variable<String?>(nome);
+    }
+    if (!nullToAbsent || dataAdmissao != null) {
+      map['data_admissao'] = Variable<DateTime?>(dataAdmissao);
+    }
+    if (!nullToAbsent || ativo != null) {
+      map['ativo'] = Variable<String?>(ativo);
+    }
+    return map;
+  }
+
+  ColaboradorsCompanion toCompanion(bool nullToAbsent) {
+    return ColaboradorsCompanion(
+      codigo:
+          codigo == null && nullToAbsent ? const Value.absent() : Value(codigo),
+      matricula: matricula == null && nullToAbsent
+          ? const Value.absent()
+          : Value(matricula),
+      nome: nome == null && nullToAbsent ? const Value.absent() : Value(nome),
+      dataAdmissao: dataAdmissao == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dataAdmissao),
+      ativo:
+          ativo == null && nullToAbsent ? const Value.absent() : Value(ativo),
+    );
+  }
+
+  factory Colaborador.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Colaborador(
+      codigo: serializer.fromJson<int?>(json['codigo']),
+      matricula: serializer.fromJson<String?>(json['matricula']),
+      nome: serializer.fromJson<String?>(json['nome']),
+      dataAdmissao: serializer.fromJson<DateTime?>(json['dataAdmissao']),
+      ativo: serializer.fromJson<String?>(json['ativo']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'codigo': serializer.toJson<int?>(codigo),
+      'matricula': serializer.toJson<String?>(matricula),
+      'nome': serializer.toJson<String?>(nome),
+      'dataAdmissao': serializer.toJson<DateTime?>(dataAdmissao),
+      'ativo': serializer.toJson<String?>(ativo),
+    };
+  }
+
+  Colaborador copyWith(
+          {int? codigo,
+          String? matricula,
+          String? nome,
+          DateTime? dataAdmissao,
+          String? ativo}) =>
+      Colaborador(
+        codigo: codigo ?? this.codigo,
+        matricula: matricula ?? this.matricula,
+        nome: nome ?? this.nome,
+        dataAdmissao: dataAdmissao ?? this.dataAdmissao,
+        ativo: ativo ?? this.ativo,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Colaborador(')
+          ..write('codigo: $codigo, ')
+          ..write('matricula: $matricula, ')
+          ..write('nome: $nome, ')
+          ..write('dataAdmissao: $dataAdmissao, ')
+          ..write('ativo: $ativo')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(codigo, matricula, nome, dataAdmissao, ativo);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Colaborador &&
+          other.codigo == this.codigo &&
+          other.matricula == this.matricula &&
+          other.nome == this.nome &&
+          other.dataAdmissao == this.dataAdmissao &&
+          other.ativo == this.ativo);
+}
+
+class ColaboradorsCompanion extends UpdateCompanion<Colaborador> {
+  final Value<int?> codigo;
+  final Value<String?> matricula;
+  final Value<String?> nome;
+  final Value<DateTime?> dataAdmissao;
+  final Value<String?> ativo;
+  const ColaboradorsCompanion({
+    this.codigo = const Value.absent(),
+    this.matricula = const Value.absent(),
+    this.nome = const Value.absent(),
+    this.dataAdmissao = const Value.absent(),
+    this.ativo = const Value.absent(),
+  });
+  ColaboradorsCompanion.insert({
+    this.codigo = const Value.absent(),
+    this.matricula = const Value.absent(),
+    this.nome = const Value.absent(),
+    this.dataAdmissao = const Value.absent(),
+    this.ativo = const Value.absent(),
+  });
+  static Insertable<Colaborador> custom({
+    Expression<int?>? codigo,
+    Expression<String?>? matricula,
+    Expression<String?>? nome,
+    Expression<DateTime?>? dataAdmissao,
+    Expression<String?>? ativo,
+  }) {
+    return RawValuesInsertable({
+      if (codigo != null) 'codigo': codigo,
+      if (matricula != null) 'matricula': matricula,
+      if (nome != null) 'nome': nome,
+      if (dataAdmissao != null) 'data_admissao': dataAdmissao,
+      if (ativo != null) 'ativo': ativo,
+    });
+  }
+
+  ColaboradorsCompanion copyWith(
+      {Value<int?>? codigo,
+      Value<String?>? matricula,
+      Value<String?>? nome,
+      Value<DateTime?>? dataAdmissao,
+      Value<String?>? ativo}) {
+    return ColaboradorsCompanion(
+      codigo: codigo ?? this.codigo,
+      matricula: matricula ?? this.matricula,
+      nome: nome ?? this.nome,
+      dataAdmissao: dataAdmissao ?? this.dataAdmissao,
+      ativo: ativo ?? this.ativo,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (codigo.present) {
+      map['codigo'] = Variable<int?>(codigo.value);
+    }
+    if (matricula.present) {
+      map['matricula'] = Variable<String?>(matricula.value);
+    }
+    if (nome.present) {
+      map['nome'] = Variable<String?>(nome.value);
+    }
+    if (dataAdmissao.present) {
+      map['data_admissao'] = Variable<DateTime?>(dataAdmissao.value);
+    }
+    if (ativo.present) {
+      map['ativo'] = Variable<String?>(ativo.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ColaboradorsCompanion(')
+          ..write('codigo: $codigo, ')
+          ..write('matricula: $matricula, ')
+          ..write('nome: $nome, ')
+          ..write('dataAdmissao: $dataAdmissao, ')
+          ..write('ativo: $ativo')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ColaboradorsTable extends Colaboradors
+    with TableInfo<$ColaboradorsTable, Colaborador> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ColaboradorsTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _codigoMeta = const VerificationMeta('codigo');
+  @override
+  late final GeneratedColumn<int?> codigo = GeneratedColumn<int?>(
+      'codigo', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+  final VerificationMeta _matriculaMeta = const VerificationMeta('matricula');
+  @override
+  late final GeneratedColumn<String?> matricula = GeneratedColumn<String?>(
+      'matricula', aliasedName, true,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 3, maxTextLength: 20),
+      type: const StringType(),
+      requiredDuringInsert: false);
+  final VerificationMeta _nomeMeta = const VerificationMeta('nome');
+  @override
+  late final GeneratedColumn<String?> nome = GeneratedColumn<String?>(
+      'nome', aliasedName, true,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 3, maxTextLength: 180),
+      type: const StringType(),
+      requiredDuringInsert: false);
+  final VerificationMeta _dataAdmissaoMeta =
+      const VerificationMeta('dataAdmissao');
+  @override
+  late final GeneratedColumn<DateTime?> dataAdmissao =
+      GeneratedColumn<DateTime?>('data_admissao', aliasedName, true,
+          type: const IntType(), requiredDuringInsert: false);
+  final VerificationMeta _ativoMeta = const VerificationMeta('ativo');
+  @override
+  late final GeneratedColumn<String?> ativo = GeneratedColumn<String?>(
+      'ativo', aliasedName, true,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 1),
+      type: const StringType(),
+      requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [codigo, matricula, nome, dataAdmissao, ativo];
+  @override
+  String get aliasedName => _alias ?? 'tb_colaborador';
+  @override
+  String get actualTableName => 'tb_colaborador';
+  @override
+  VerificationContext validateIntegrity(Insertable<Colaborador> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('codigo')) {
+      context.handle(_codigoMeta,
+          codigo.isAcceptableOrUnknown(data['codigo']!, _codigoMeta));
+    }
+    if (data.containsKey('matricula')) {
+      context.handle(_matriculaMeta,
+          matricula.isAcceptableOrUnknown(data['matricula']!, _matriculaMeta));
+    }
+    if (data.containsKey('nome')) {
+      context.handle(
+          _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
+    }
+    if (data.containsKey('data_admissao')) {
+      context.handle(
+          _dataAdmissaoMeta,
+          dataAdmissao.isAcceptableOrUnknown(
+              data['data_admissao']!, _dataAdmissaoMeta));
+    }
+    if (data.containsKey('ativo')) {
+      context.handle(
+          _ativoMeta, ativo.isAcceptableOrUnknown(data['ativo']!, _ativoMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {codigo};
+  @override
+  Colaborador map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return Colaborador.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $ColaboradorsTable createAlias(String alias) {
+    return $ColaboradorsTable(attachedDatabase, alias);
+  }
+}
+
+class ColaboradorFuncao extends DataClass
+    implements Insertable<ColaboradorFuncao> {
+  final int? codigo;
+  final int? codigoColaborador;
+  final int? codigoFuncao;
+  final int? percentual;
+  ColaboradorFuncao(
+      {this.codigo,
+      this.codigoColaborador,
+      this.codigoFuncao,
+      this.percentual});
+  factory ColaboradorFuncao.fromData(Map<String, dynamic> data,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return ColaboradorFuncao(
+      codigo: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
+      codigoColaborador: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}codigo_colaborador']),
+      codigoFuncao: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo_funcao']),
+      percentual: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}percentual']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || codigo != null) {
+      map['codigo'] = Variable<int?>(codigo);
+    }
+    if (!nullToAbsent || codigoColaborador != null) {
+      map['codigo_colaborador'] = Variable<int?>(codigoColaborador);
+    }
+    if (!nullToAbsent || codigoFuncao != null) {
+      map['codigo_funcao'] = Variable<int?>(codigoFuncao);
+    }
+    if (!nullToAbsent || percentual != null) {
+      map['percentual'] = Variable<int?>(percentual);
+    }
+    return map;
+  }
+
+  ColaboradorFuncaosCompanion toCompanion(bool nullToAbsent) {
+    return ColaboradorFuncaosCompanion(
+      codigo:
+          codigo == null && nullToAbsent ? const Value.absent() : Value(codigo),
+      codigoColaborador: codigoColaborador == null && nullToAbsent
+          ? const Value.absent()
+          : Value(codigoColaborador),
+      codigoFuncao: codigoFuncao == null && nullToAbsent
+          ? const Value.absent()
+          : Value(codigoFuncao),
+      percentual: percentual == null && nullToAbsent
+          ? const Value.absent()
+          : Value(percentual),
+    );
+  }
+
+  factory ColaboradorFuncao.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ColaboradorFuncao(
+      codigo: serializer.fromJson<int?>(json['codigo']),
+      codigoColaborador: serializer.fromJson<int?>(json['codigoColaborador']),
+      codigoFuncao: serializer.fromJson<int?>(json['codigoFuncao']),
+      percentual: serializer.fromJson<int?>(json['percentual']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'codigo': serializer.toJson<int?>(codigo),
+      'codigoColaborador': serializer.toJson<int?>(codigoColaborador),
+      'codigoFuncao': serializer.toJson<int?>(codigoFuncao),
+      'percentual': serializer.toJson<int?>(percentual),
+    };
+  }
+
+  ColaboradorFuncao copyWith(
+          {int? codigo,
+          int? codigoColaborador,
+          int? codigoFuncao,
+          int? percentual}) =>
+      ColaboradorFuncao(
+        codigo: codigo ?? this.codigo,
+        codigoColaborador: codigoColaborador ?? this.codigoColaborador,
+        codigoFuncao: codigoFuncao ?? this.codigoFuncao,
+        percentual: percentual ?? this.percentual,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('ColaboradorFuncao(')
+          ..write('codigo: $codigo, ')
+          ..write('codigoColaborador: $codigoColaborador, ')
+          ..write('codigoFuncao: $codigoFuncao, ')
+          ..write('percentual: $percentual')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(codigo, codigoColaborador, codigoFuncao, percentual);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ColaboradorFuncao &&
+          other.codigo == this.codigo &&
+          other.codigoColaborador == this.codigoColaborador &&
+          other.codigoFuncao == this.codigoFuncao &&
+          other.percentual == this.percentual);
+}
+
+class ColaboradorFuncaosCompanion extends UpdateCompanion<ColaboradorFuncao> {
+  final Value<int?> codigo;
+  final Value<int?> codigoColaborador;
+  final Value<int?> codigoFuncao;
+  final Value<int?> percentual;
+  const ColaboradorFuncaosCompanion({
+    this.codigo = const Value.absent(),
+    this.codigoColaborador = const Value.absent(),
+    this.codigoFuncao = const Value.absent(),
+    this.percentual = const Value.absent(),
+  });
+  ColaboradorFuncaosCompanion.insert({
+    this.codigo = const Value.absent(),
+    this.codigoColaborador = const Value.absent(),
+    this.codigoFuncao = const Value.absent(),
+    this.percentual = const Value.absent(),
+  });
+  static Insertable<ColaboradorFuncao> custom({
+    Expression<int?>? codigo,
+    Expression<int?>? codigoColaborador,
+    Expression<int?>? codigoFuncao,
+    Expression<int?>? percentual,
+  }) {
+    return RawValuesInsertable({
+      if (codigo != null) 'codigo': codigo,
+      if (codigoColaborador != null) 'codigo_colaborador': codigoColaborador,
+      if (codigoFuncao != null) 'codigo_funcao': codigoFuncao,
+      if (percentual != null) 'percentual': percentual,
+    });
+  }
+
+  ColaboradorFuncaosCompanion copyWith(
+      {Value<int?>? codigo,
+      Value<int?>? codigoColaborador,
+      Value<int?>? codigoFuncao,
+      Value<int?>? percentual}) {
+    return ColaboradorFuncaosCompanion(
+      codigo: codigo ?? this.codigo,
+      codigoColaborador: codigoColaborador ?? this.codigoColaborador,
+      codigoFuncao: codigoFuncao ?? this.codigoFuncao,
+      percentual: percentual ?? this.percentual,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (codigo.present) {
+      map['codigo'] = Variable<int?>(codigo.value);
+    }
+    if (codigoColaborador.present) {
+      map['codigo_colaborador'] = Variable<int?>(codigoColaborador.value);
+    }
+    if (codigoFuncao.present) {
+      map['codigo_funcao'] = Variable<int?>(codigoFuncao.value);
+    }
+    if (percentual.present) {
+      map['percentual'] = Variable<int?>(percentual.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ColaboradorFuncaosCompanion(')
+          ..write('codigo: $codigo, ')
+          ..write('codigoColaborador: $codigoColaborador, ')
+          ..write('codigoFuncao: $codigoFuncao, ')
+          ..write('percentual: $percentual')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ColaboradorFuncaosTable extends ColaboradorFuncaos
+    with TableInfo<$ColaboradorFuncaosTable, ColaboradorFuncao> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ColaboradorFuncaosTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _codigoMeta = const VerificationMeta('codigo');
+  @override
+  late final GeneratedColumn<int?> codigo = GeneratedColumn<int?>(
+      'codigo', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+  final VerificationMeta _codigoColaboradorMeta =
+      const VerificationMeta('codigoColaborador');
+  @override
+  late final GeneratedColumn<int?> codigoColaborador = GeneratedColumn<int?>(
+      'codigo_colaborador', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      $customConstraints: 'NULLABLE REFERENCES tb_colaborador(codigo)');
+  final VerificationMeta _codigoFuncaoMeta =
+      const VerificationMeta('codigoFuncao');
+  @override
+  late final GeneratedColumn<int?> codigoFuncao = GeneratedColumn<int?>(
+      'codigo_funcao', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      $customConstraints: 'NULLABLE REFERENCES tb_funcao(codigo)');
+  final VerificationMeta _percentualMeta = const VerificationMeta('percentual');
+  @override
+  late final GeneratedColumn<int?> percentual = GeneratedColumn<int?>(
+      'percentual', aliasedName, true,
+      type: const IntType(), requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [codigo, codigoColaborador, codigoFuncao, percentual];
+  @override
+  String get aliasedName => _alias ?? 'tb_colaborador_funcao';
+  @override
+  String get actualTableName => 'tb_colaborador_funcao';
+  @override
+  VerificationContext validateIntegrity(Insertable<ColaboradorFuncao> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('codigo')) {
+      context.handle(_codigoMeta,
+          codigo.isAcceptableOrUnknown(data['codigo']!, _codigoMeta));
+    }
+    if (data.containsKey('codigo_colaborador')) {
+      context.handle(
+          _codigoColaboradorMeta,
+          codigoColaborador.isAcceptableOrUnknown(
+              data['codigo_colaborador']!, _codigoColaboradorMeta));
+    }
+    if (data.containsKey('codigo_funcao')) {
+      context.handle(
+          _codigoFuncaoMeta,
+          codigoFuncao.isAcceptableOrUnknown(
+              data['codigo_funcao']!, _codigoFuncaoMeta));
+    }
+    if (data.containsKey('percentual')) {
+      context.handle(
+          _percentualMeta,
+          percentual.isAcceptableOrUnknown(
+              data['percentual']!, _percentualMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {codigo};
+  @override
+  ColaboradorFuncao map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return ColaboradorFuncao.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $ColaboradorFuncaosTable createAlias(String alias) {
+    return $ColaboradorFuncaosTable(attachedDatabase, alias);
+  }
+}
+
+class Funcao extends DataClass implements Insertable<Funcao> {
+  final int? codigo;
+  final String? nome;
+  Funcao({this.codigo, this.nome});
+  factory Funcao.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return Funcao(
+      codigo: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
+      nome: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}nome']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || codigo != null) {
+      map['codigo'] = Variable<int?>(codigo);
+    }
+    if (!nullToAbsent || nome != null) {
+      map['nome'] = Variable<String?>(nome);
+    }
+    return map;
+  }
+
+  FuncaosCompanion toCompanion(bool nullToAbsent) {
+    return FuncaosCompanion(
+      codigo:
+          codigo == null && nullToAbsent ? const Value.absent() : Value(codigo),
+      nome: nome == null && nullToAbsent ? const Value.absent() : Value(nome),
+    );
+  }
+
+  factory Funcao.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Funcao(
+      codigo: serializer.fromJson<int?>(json['codigo']),
+      nome: serializer.fromJson<String?>(json['nome']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'codigo': serializer.toJson<int?>(codigo),
+      'nome': serializer.toJson<String?>(nome),
+    };
+  }
+
+  Funcao copyWith({int? codigo, String? nome}) => Funcao(
+        codigo: codigo ?? this.codigo,
+        nome: nome ?? this.nome,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Funcao(')
+          ..write('codigo: $codigo, ')
+          ..write('nome: $nome')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(codigo, nome);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Funcao &&
+          other.codigo == this.codigo &&
+          other.nome == this.nome);
+}
+
+class FuncaosCompanion extends UpdateCompanion<Funcao> {
+  final Value<int?> codigo;
+  final Value<String?> nome;
+  const FuncaosCompanion({
+    this.codigo = const Value.absent(),
+    this.nome = const Value.absent(),
+  });
+  FuncaosCompanion.insert({
+    this.codigo = const Value.absent(),
+    this.nome = const Value.absent(),
+  });
+  static Insertable<Funcao> custom({
+    Expression<int?>? codigo,
+    Expression<String?>? nome,
+  }) {
+    return RawValuesInsertable({
+      if (codigo != null) 'codigo': codigo,
+      if (nome != null) 'nome': nome,
+    });
+  }
+
+  FuncaosCompanion copyWith({Value<int?>? codigo, Value<String?>? nome}) {
+    return FuncaosCompanion(
+      codigo: codigo ?? this.codigo,
+      nome: nome ?? this.nome,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (codigo.present) {
+      map['codigo'] = Variable<int?>(codigo.value);
+    }
+    if (nome.present) {
+      map['nome'] = Variable<String?>(nome.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FuncaosCompanion(')
+          ..write('codigo: $codigo, ')
+          ..write('nome: $nome')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FuncaosTable extends Funcaos with TableInfo<$FuncaosTable, Funcao> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FuncaosTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _codigoMeta = const VerificationMeta('codigo');
+  @override
+  late final GeneratedColumn<int?> codigo = GeneratedColumn<int?>(
+      'codigo', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+  final VerificationMeta _nomeMeta = const VerificationMeta('nome');
+  @override
+  late final GeneratedColumn<String?> nome = GeneratedColumn<String?>(
+      'nome', aliasedName, true,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 3, maxTextLength: 180),
+      type: const StringType(),
+      requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [codigo, nome];
+  @override
+  String get aliasedName => _alias ?? 'tb_funcao';
+  @override
+  String get actualTableName => 'tb_funcao';
+  @override
+  VerificationContext validateIntegrity(Insertable<Funcao> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('codigo')) {
+      context.handle(_codigoMeta,
+          codigo.isAcceptableOrUnknown(data['codigo']!, _codigoMeta));
+    }
+    if (data.containsKey('nome')) {
+      context.handle(
+          _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {codigo};
+  @override
+  Funcao map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return Funcao.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $FuncaosTable createAlias(String alias) {
+    return $FuncaosTable(attachedDatabase, alias);
+  }
+}
+
 abstract class _$AppDb extends GeneratedDatabase {
   _$AppDb(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $OrdemServicosTable ordemServicos = $OrdemServicosTable(this);
@@ -2188,6 +2901,10 @@ abstract class _$AppDb extends GeneratedDatabase {
   late final $PermissaosTable permissaos = $PermissaosTable(this);
   late final $UsuarioPermissaosTable usuarioPermissaos =
       $UsuarioPermissaosTable(this);
+  late final $ColaboradorsTable colaboradors = $ColaboradorsTable(this);
+  late final $ColaboradorFuncaosTable colaboradorFuncaos =
+      $ColaboradorFuncaosTable(this);
+  late final $FuncaosTable funcaos = $FuncaosTable(this);
   late final OrdemServicoDao ordemServicoDao = OrdemServicoDao(this as AppDb);
   late final LocalDao localDao = LocalDao(this as AppDb);
   late final LocalSubDao localSubDao = LocalSubDao(this as AppDb);
@@ -2198,6 +2915,10 @@ abstract class _$AppDb extends GeneratedDatabase {
   late final PermissaoDao permissaoDao = PermissaoDao(this as AppDb);
   late final UsuarioPermissaoDao usuarioPermissaoDao =
       UsuarioPermissaoDao(this as AppDb);
+  late final FuncaoDao funcaoDao = FuncaoDao(this as AppDb);
+  late final ColaboradorDao colaboradorDao = ColaboradorDao(this as AppDb);
+  late final ColaboradorFuncaoDao colaboradorFuncaoDao =
+      ColaboradorFuncaoDao(this as AppDb);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
@@ -2209,6 +2930,9 @@ abstract class _$AppDb extends GeneratedDatabase {
         statusOrdemServicos,
         usuarios,
         permissaos,
-        usuarioPermissaos
+        usuarioPermissaos,
+        colaboradors,
+        colaboradorFuncaos,
+        funcaos
       ];
 }

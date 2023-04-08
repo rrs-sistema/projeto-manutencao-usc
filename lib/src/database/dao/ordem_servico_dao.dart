@@ -104,13 +104,13 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
     return transaction(() async {
       final SharedPreferences prefs = await _prefs;
       dynamic codigoUsuario = prefs.get("codigoUsuario");
-      if (codigoUsuario != null || codigoUsuario > 0) {
+      if (codigoUsuario == null || codigoUsuario == '0') {
         return 0;
       }
       ordemServico = ordemServico.copyWith(
           dataAbertura: DateTime.now(),
           codigoStatus: 1,
-          codigoUsuario: codigoUsuario);
+          codigoUsuario: int.tryParse(codigoUsuario));
       return await into(ordemServicos).insert(ordemServico);
     });
   }

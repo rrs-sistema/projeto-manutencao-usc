@@ -159,13 +159,7 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
     //       onSort: (int columnIndex, bool ascending) => sort<String>(
     //           (Permissao obj) => obj.nome, columnIndex, ascending)),
     // );
-    colunas.add(
-      DataColumn(
-          label: const Text('Descrição'),
-          tooltip: 'Conteúdo para o campo descrição',
-          onSort: (int columnIndex, bool ascending) => sort<String>(
-              (Permissao obj) => obj.descricao, columnIndex, ascending)),
-    );
+
     return colunas;
   }
 
@@ -237,8 +231,7 @@ class _PermissaoDataSource extends DataTableSource {
     return DataRow.byIndex(
       index: index,
       cells: <DataCell>[
-        //DataCell(Text(permissao.nome ?? '')),
-        DataCell(Text(permissao.descricao ?? '')),
+        DataCell(Text(permissao.nome ?? '')),
       ],
     );
   }

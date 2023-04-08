@@ -81,13 +81,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                         FadeAnimation(
                           delay: 1,
-                          child: Container(
-                            child: Text(
-                              "Deixe-nos ajudá-lo",
-                              style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  letterSpacing: 0.5),
-                            ),
+                          child: Text(
+                            "Deixe-nos ajudá-lo",
+                            style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                letterSpacing: 0.5),
                           ),
                         ),
                         const SizedBox(
@@ -150,26 +148,26 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 Navigator.of(context)
                                     .push(MaterialPageRoute(builder: (context) {
                                   return const PinCodeVerificationScreen(
-                                    phoneNumber: '0102756960',
+                                    phoneNumber: '41984221805',
                                   );
                                 }));
                               },
-                              child: Text(
-                                "Continuar",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
                               style: TextButton.styleFrom(
                                   backgroundColor: const Color(0xFF2697FF),
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 14.0, horizontal: 80),
                                   shape: RoundedRectangleBorder(
                                       borderRadius:
-                                          BorderRadius.circular(12.0)))),
+                                          BorderRadius.circular(12.0))),
+                              child: const Text(
+                                'Continuar',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )),
                         ),
                       ],
                     ),

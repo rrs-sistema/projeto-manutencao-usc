@@ -1,17 +1,17 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:manutencao_usc/src/view/home_page.dart';
-import 'package:manutencao_usc/src/view/shared/caixas_de_dialogo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './../view/ordem_servico/ordem_servico_persiste_page.dart';
 import './../view/menu/menu_titulo_grupo_menu_interno.dart';
 import './../database/tabelas/ordem_servico.dart';
 import './../view/shared/custom_background.dart';
+import './../view/shared/caixas_de_dialogo.dart';
 import './../view/shared/gradiente_app.dart';
 import './../view/shared/profile_tile.dart';
 import './../database/app_db.dart';
+import './../view/home_page.dart';
 import './../infra/sessao.dart';
 import './../infra/infra.dart';
 
@@ -24,6 +24,7 @@ class TabHome extends StatefulWidget {
 
 class _TabHomeState extends State<TabHome> {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  String _userName = '';
   OrdemServico lastOrdeService = OrdemServico();
   String descricaoOs = 'Ordem de Serviço não localizada';
 
@@ -33,6 +34,15 @@ class _TabHomeState extends State<TabHome> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _getLastOrdeService());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _getUser());
+  }
+
+  Future _getUser() async {
+    final SharedPreferences prefs = await _prefs;
+    dynamic userName = prefs.get('nomeUsuario');
+    if (userName != null) {
+      _userName = '$userName - Sair';
+    }
   }
 
   Future _executarFuncaoMenuButtonGeral(String operacao) async {
@@ -65,17 +75,17 @@ class _TabHomeState extends State<TabHome> {
                 child: SizedBox(
                   height: 15.0,
                   child: Row(
-                    children: const [
-                      Icon(
+                    children: [
+                      const Icon(
                         FontAwesomeIcons.userClock,
                         color: Colors.purple,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 15,
                       ),
                       Text(
-                        ' Sair',
-                        style: TextStyle(
+                        ' $_userName',
+                        style: const TextStyle(
                             decorationColor: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.bold),

@@ -304,6 +304,7 @@ class UsuarioPersistePageState extends State<UsuarioPersistePage>
                                           value) {
                                     return 'A senha não confere';
                                   }
+                                  return null;
                                 },
                                 maxLength: 254,
                                 maxLines: 1,

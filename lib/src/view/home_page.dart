@@ -1,9 +1,12 @@
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
-import 'package:flutter/material.dart';
+import 'package:manutencao_usc/src/controller/controller.dart';
+import 'package:manutencao_usc/src/infra/sessao.dart';
+
 import 'package:manutencao_usc/src/view/usuario/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
-import 'ordem_servico/ordem_servico_lista_page.dart';
+import './ordem_servico/ordem_servico_lista_page.dart';
 import './../../src/infra/infra.dart';
 import './../view/tab_cadastros.dart';
 import './../view/tab_home.dart';
@@ -37,7 +40,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  final _pageController = PageController(initialPage: 1);
+  final _pageController = PageController(initialPage: 0);
   int maxCount = 3;
 
   Future<void> _verificaUsuarioLogado() async {
@@ -47,6 +50,10 @@ class _MyHomePageState extends State<MyHomePage> {
       if (!mounted) return;
       Navigator.of(context).push(MaterialPageRoute(
           builder: (BuildContext context) => const LoginScreen()));
+    } else {
+      UsuarioController.listaUsuarioPermissao =
+          await Sessao.db.usuarioPermissaoDao.consultarListaMontado(
+              campo: 'codigo_usuario', valor: codigo.toString());
     }
   }
 

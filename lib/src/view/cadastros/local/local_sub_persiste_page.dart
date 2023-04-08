@@ -230,26 +230,6 @@ class SubLocalPersistePageState extends State<SubLocalPersistePage> {
                               },
                             ),
                           ),
-                          BootstrapCol(
-                            sizes: 'col-12',
-                            child: TextFormField(
-                              maxLength: 250,
-                              maxLines: 3,
-                              initialValue:
-                                  widget.subLocalMontado!.localSub?.descricao ??
-                                      '',
-                              decoration: getInputDecoration(
-                                  'Informe a Descrição', 'Descrição', false),
-                              onSaved: (String? value) {},
-                              onChanged: (text) {
-                                widget.subLocalMontado!.localSub =
-                                    widget.subLocalMontado!.localSub!.copyWith(
-                                        descricao:
-                                            removeCaracteresEspeciais(text));
-                                _formFoiAlterado = true;
-                              },
-                            ),
-                          ),
                         ],
                       ),
                       const Divider(

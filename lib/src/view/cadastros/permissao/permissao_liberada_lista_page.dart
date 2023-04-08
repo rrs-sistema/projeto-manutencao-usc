@@ -153,12 +153,8 @@ class UsuarioPermissaoListaPageState extends State<UsuarioPermissaoListaPage> {
     List<DataRow> lista = [];
     for (var userMotando in UsuarioController.listaUsuarioPermissao!) {
       List<DataCell> celulas = [];
-
       celulas = [
         DataCell(Text(userMotando.permissao!.nome ?? ''), onTap: () {
-          //_detalharPermissao(widget.usuario, context);
-        }),
-        DataCell(Text(userMotando.permissao!.descricao ?? ''), onTap: () {
           //_detalharPermissao(widget.usuario, context);
         }),
       ];
@@ -167,11 +163,12 @@ class UsuarioPermissaoListaPageState extends State<UsuarioPermissaoListaPage> {
     }
     return lista;
   }
-
+/*
   Future<void> _detalharPermissao(
       Usuario? usuario, BuildContext context) async {
     setState(() {
       _getRows();
     });
   }
+  */
 }

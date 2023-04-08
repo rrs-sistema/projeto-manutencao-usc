@@ -113,7 +113,16 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
             if (widget.operacao == 'A') {
               await Sessao.db.ordemServicoDao.alterar(_ordemServico!);
             } else {
-              await Sessao.db.ordemServicoDao.inserir(_ordemServico!);
+              int result =
+                  await Sessao.db.ordemServicoDao.inserir(_ordemServico!);
+              if (result == 0) {
+                if (!mounted) return;
+                showInSnackBar(
+                    'Ops! Erro ao gravar as informações',
+                    corFundo: Constantes.btnSecondary,
+                    context);
+                return;
+              }
             }
             if (!mounted) return;
             Navigator.of(context).pop();

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:manutencao_usc/src/database/app_db.dart';
+
+import './../../database/app_db.dart';
 
 class LocalSubs extends Table {
   @override
@@ -13,8 +14,6 @@ class LocalSubs extends Table {
 
   TextColumn get nome =>
       text().nullable().withLength(min: 3, max: 180).named('nome')();
-  TextColumn get descricao =>
-      text().nullable().withLength(max: 255).named('descricao')();
 }
 
 class LocalSubMontado {

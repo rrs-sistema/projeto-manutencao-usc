@@ -183,15 +183,6 @@ class LocalSubListaPageState extends State<LocalSubListaPage> {
               columnIndex,
               ascending)),
     );
-    colunas.add(
-      DataColumn(
-          label: const Text('Descricao'),
-          tooltip: 'Conteúdo para o campo descrição',
-          onSort: (int columnIndex, bool ascending) => sort<String>(
-              (LocalSubMontado grupo) => grupo.localSub!.descricao,
-              columnIndex,
-              ascending)),
-    );
     return colunas;
   }
 
@@ -284,9 +275,6 @@ class _LocalSubMontadoDataSource extends DataTableSource {
           _detalharsubLocalMontado(subLocalMontado, context, refrescarTela);
         }),
         DataCell(Text(subLocalMontado.localSub?.nome ?? ''), onTap: () {
-          _detalharsubLocalMontado(subLocalMontado, context, refrescarTela);
-        }),
-        DataCell(Text(subLocalMontado.localSub?.descricao ?? ''), onTap: () {
           _detalharsubLocalMontado(subLocalMontado, context, refrescarTela);
         }),
       ],

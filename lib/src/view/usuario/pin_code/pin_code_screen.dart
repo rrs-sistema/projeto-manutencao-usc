@@ -106,13 +106,11 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                         ),
                         FadeAnimation(
                           delay: 1,
-                          child: Container(
-                            child: Text(
-                              "Let us help you",
-                              style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  letterSpacing: 0.5),
-                            ),
+                          child: Text(
+                            "Deixe-nos ajudá-lo",
+                            style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                letterSpacing: 0.5),
                           ),
                         ),
                         const SizedBox(
@@ -121,7 +119,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 8.0),
                           child: Text(
-                            'Phone Number Verification',
+                            'Verificação do número de telefone',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 22),
                             textAlign: TextAlign.center,
@@ -132,7 +130,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                               horizontal: 30.0, vertical: 8),
                           child: RichText(
                             text: TextSpan(
-                                text: "Enter the code sent to ",
+                                text: "Digite o código enviado para ",
                                 children: [
                                   TextSpan(
                                       text: "${widget.phoneNumber}",
@@ -169,7 +167,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                             animationType: AnimationType.fade,
                             validator: (v) {
                               if (v!.length < 3) {
-                                return "Validate me";
+                                return "Valide-me";
                               } else {
                                 return null;
                               }
@@ -196,7 +194,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                               )
                             ],
                             onCompleted: (v) {
-                              debugPrint("Completed");
+                              debugPrint("Concluída");
                             },
                             // onTap: () {
                             //   print("Pressed");
@@ -208,7 +206,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                               });
                             },
                             beforeTextPaste: (text) {
-                              debugPrint("Allowing to paste $text");
+                              debugPrint("Permitindo colar $text");
                               //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
                               //but you can show anything you want here, like your pop up saying wrong paste format or etc
                               return true;
@@ -219,7 +217,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 30.0),
                           child: Text(
                             hasError
-                                ? "*Please fill up all the cells properly"
+                                ? "*Por favor, preencha todas as células corretamente"
                                 : "",
                             style: const TextStyle(
                                 color: Colors.red,
@@ -234,14 +232,14 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              "Didn't receive the code? ",
+                              "Não recebi o código? ",
                               style: TextStyle(
                                   color: Colors.black54, fontSize: 15),
                             ),
                             TextButton(
-                              onPressed: () => snackBar("OTP resend!!"),
+                              onPressed: () => snackBar("OTP reenviar!!"),
                               child: const Text(
-                                "RESEND",
+                                "REENVIAR",
                                 style: TextStyle(
                                     color: Color(0xFF91D3B3),
                                     fontWeight: FontWeight.bold,
@@ -268,27 +266,27 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                                   setState(
                                     () {
                                       hasError = false;
-                                      snackBar("OTP Verified!!");
+                                      snackBar("OTP verificado!!");
                                     },
                                   );
                                 }
                               },
-                              child: Text(
-                                "Verify",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
                               style: TextButton.styleFrom(
                                   backgroundColor: const Color(0xFF2697FF),
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 14.0, horizontal: 80),
                                   shape: RoundedRectangleBorder(
                                       borderRadius:
-                                          BorderRadius.circular(12.0)))),
+                                          BorderRadius.circular(12.0))),
+                              child: const Text(
+                                'Verificar',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )),
                         ),
                       ],
                     ),
@@ -307,7 +305,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text("Want to try again? ",
+                      const Text("Quer tentar novamente? ",
                           style: TextStyle(
                             color: Colors.grey,
                             letterSpacing: 0.5,
@@ -317,10 +315,10 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                           Navigator.pop(context);
                           Navigator.of(context)
                               .push(MaterialPageRoute(builder: (context) {
-                            return LoginScreen();
+                            return const LoginScreen();
                           }));
                         },
-                        child: Text("Sing in",
+                        child: Text("Entrar",
                             style: TextStyle(
                                 color: Colors.white.withOpacity(0.9),
                                 fontWeight: FontWeight.bold,
