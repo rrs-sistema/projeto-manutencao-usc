@@ -3,6 +3,7 @@ import 'package:manutencao_usc/src/database/dao/colaborador_funcao_dao.dart';
 import 'package:manutencao_usc/src/database/dao/funcao_dao.dart';
 import 'package:manutencao_usc/src/database/tabelas/colaborador.dart';
 import 'package:manutencao_usc/src/database/tabelas/colaborador_funcao.dart';
+import 'package:manutencao_usc/src/database/tabelas/estado_civil.dart';
 import 'package:manutencao_usc/src/database/tabelas/funcao.dart';
 import 'package:path_provider/path_provider.dart' as paths;
 import 'package:path/path.dart' as p;
@@ -63,9 +64,10 @@ LazyDatabase _opeConnection() {
   Usuarios,
   Permissaos,
   UsuarioPermissaos,
+  EstadoCivils,
   Colaboradors,
-  ColaboradorFuncaos,
   Funcaos,
+  ColaboradorFuncaos,
 ], daos: [
   OrdemServicoDao,
   LocalDao,
@@ -150,7 +152,7 @@ class AppDb extends _$AppDb {
 
     // DADOS INICIAIS DA TABELA DE PERMISSÃO
     await db.customStatement(
-        "INSERT INTO tb_permissao (codigo, nome, descricao) VALUES (1, 'ROLE_SUPORTE', 'Suporte - acessos liberados a tudo')");
+        "INSERT INTO tb_permissao (codigo, nome, descricao) VALUES (1, 'ROLE_SUPORTE_APP', 'Desenvolvedor do APP - acessos liberados a tudo')");
     await db.customStatement(
         "INSERT INTO tb_permissao (codigo, nome, descricao) VALUES (2, 'ROLE_ADMINISTRADOR', 'Admistrador - acessos a todas funcionalidades do sistema')");
     //Dados da tabela de PERMISSAO PARA: categoria
@@ -191,7 +193,9 @@ class AppDb extends _$AppDb {
     await db.customStatement(
         "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_DELETAR_ORDEM_SERVICO', 'Permissão para deletar as ordem de serviços')");
     await db.customStatement(
-        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_PESQUISAR_ORDEM_SERVICO', 'Permissão para pesquisar as ordem de serviços')");
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_PESQUISAR_SUA_ORDEM_SERVICO', 'Permissão para pesquisar apenas suas ordem de serviços')");
+    await db.customStatement(
+        "INSERT INTO tb_permissao (nome, descricao) VALUES ('ROLE_PESQUISAR_TODAS_ORDEM_SERVICO', 'Permissão para pesquisar todas as ordem de serviços')");
 
     //Dados da tabela de PERMISSAO PARA: usuário
     await db.customStatement(

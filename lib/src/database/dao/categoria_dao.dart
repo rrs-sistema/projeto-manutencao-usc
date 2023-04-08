@@ -16,14 +16,15 @@ class CategoriaDao extends DatabaseAccessor<AppDb> with _$CategoriaDaoMixin {
   List<Categoria>? listaCategoria;
 
   Future<List<Categoria>?> consultarLista() async {
-    listaCategoria = await select(categorias).get();
+    listaCategoria = await select(categorias).get()
+      ..where((c) => c.deletado == 'N');
     return listaCategoria;
   }
 
   Future<List<Categoria>?> consultarListaFiltro(
       String campo, String valor) async {
     listaCategoria = await (customSelect(
-        "SELECT * FROM tb_categoria WHERE $campo like '%$valor%'",
+        "SELECT * FROM tb_categoria WHERE $campo like '%$valor%' AND deletado = 'N'",
         readsFrom: {categorias}).map((row) {
       return Categoria.fromData(row.data);
     }).get());

@@ -16,13 +16,14 @@ class LocalDao extends DatabaseAccessor<AppDb> with _$LocalDaoMixin {
   List<Local>? listaLocal;
 
   Future<List<Local>?> consultarLista() async {
-    listaLocal = await select(locals).get();
+    listaLocal = await select(locals).get()
+      ..where((c) => c.deletado == 'N');
     return listaLocal;
   }
 
   Future<List<Local>?> consultarListaFiltro(String campo, String valor) async {
     listaLocal = await (customSelect(
-        "SELECT * FROM tb_local WHERE $campo like '%$valor%'",
+        "SELECT * FROM tb_local WHERE $campo like '%$valor%' AND deletado = 'N'",
         readsFrom: {locals}).map((row) {
       return Local.fromData(row.data);
     }).get());

@@ -16,13 +16,14 @@ class FuncaoDao extends DatabaseAccessor<AppDb> with _$FuncaoDaoMixin {
   List<Funcao>? listaLocal;
 
   Future<List<Funcao>?> consultarLista() async {
-    listaLocal = await select(funcaos).get();
+    listaLocal = await select(funcaos).get()
+      ..where((c) => c.deletado == 'N');
     return listaLocal;
   }
 
   Future<List<Funcao>?> consultarListaFiltro(String campo, String valor) async {
     listaLocal = await (customSelect(
-        "SELECT * FROM tb_funcao WHERE $campo like '%$valor%'",
+        "SELECT * FROM tb_funcao WHERE $campo like '%$valor%' AND deletado = 'N'",
         readsFrom: {funcaos}).map((row) {
       return Funcao.fromData(row.data);
     }).get());

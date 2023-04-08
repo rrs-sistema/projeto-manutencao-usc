@@ -16,14 +16,15 @@ class PermissaoDao extends DatabaseAccessor<AppDb> with _$PermissaoDaoMixin {
   List<Permissao>? listaPermissao;
 
   Future<List<Permissao>?> consultarLista() async {
-    listaPermissao = await select(permissaos).get();
+    listaPermissao = await select(permissaos).get()
+      ..where((c) => c.deletado == 'N');
     return listaPermissao;
   }
 
   Future<List<Permissao>?> consultarListaFiltro(
       String campo, String valor) async {
     listaPermissao = await (customSelect(
-        "SELECT * FROM tb_permissao WHERE $campo like '%$valor%'",
+        "SELECT * FROM tb_permissao WHERE $campo like '%$valor%' AND deletado = 'N'",
         readsFrom: {permissaos}).map((row) {
       return Permissao.fromData(row.data);
     }).get());

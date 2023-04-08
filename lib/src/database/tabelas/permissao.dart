@@ -9,4 +9,6 @@ class Permissaos extends Table {
       text().nullable().withLength(min: 3, max: 50).named('nome')();
   TextColumn get descricao =>
       text().nullable().withLength(max: 255).named('descricao')();
+  TextColumn get deletado =>
+      text().nullable().withLength(min: 1, max: 1).named('deletado')();
 }

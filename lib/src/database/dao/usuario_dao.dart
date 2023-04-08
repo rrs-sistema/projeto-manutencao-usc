@@ -19,7 +19,8 @@ class UsuarioDao extends DatabaseAccessor<AppDb> with _$UsuarioDaoMixin {
 
   //Future<List<Usuario>?> consultarLista() => select(usuarios).get();
   Future<List<Usuario>?> consultarLista() async {
-    listaUsuario = await select(usuarios).get();
+    listaUsuario = await select(usuarios).get()
+      ..where((c) => c.deletado == 'N');
     return listaUsuario;
   }
 
@@ -31,7 +32,7 @@ class UsuarioDao extends DatabaseAccessor<AppDb> with _$UsuarioDaoMixin {
   Future<List<Usuario>?> consultarListaFiltro(
       String campo, String valor) async {
     listaUsuario = await (customSelect(
-        "SELECT * FROM tb_usuario WHERE $campo like '%$valor%'",
+        "SELECT * FROM tb_usuario WHERE $campo like '%$valor%' AND deletado = 'N'",
         readsFrom: {usuarios}).map((row) {
       return Usuario.fromData(row.data);
     }).get());
@@ -57,9 +58,9 @@ class UsuarioDao extends DatabaseAccessor<AppDb> with _$UsuarioDaoMixin {
   }
 
   Future<int> ultimoId() async {
-    final resultado =
-        await customSelect("select MAX(codigo) as ULTIMO from tb_usuario")
-            .getSingleOrNull();
+    final resultado = await customSelect(
+            "select MAX(codigo) as ULTIMO from tb_usuario WHERE deletado = 'N'")
+        .getSingleOrNull();
     return resultado?.data["ULTIMO"] ?? 0;
   }
 

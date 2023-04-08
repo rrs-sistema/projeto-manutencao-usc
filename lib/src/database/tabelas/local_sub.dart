@@ -11,9 +11,10 @@ class LocalSubs extends Table {
       .named('codigo_local')
       .nullable()
       .customConstraint('NULLABLE REFERENCES tb_local(codigo)')();
-
   TextColumn get nome =>
       text().nullable().withLength(min: 3, max: 180).named('nome')();
+  TextColumn get deletado =>
+      text().nullable().withLength(min: 1, max: 1).named('deletado')();
 }
 
 class LocalSubMontado {

@@ -1,13 +1,12 @@
 import 'package:drift/drift.dart';
 
+import '../tabelas/estado_civil.dart';
 import '../tabelas/colaborador.dart';
 import './../app_db.dart';
 
 part 'colaborador_dao.g.dart';
 
-@DriftAccessor(tables: [
-  Colaboradors,
-])
+@DriftAccessor(tables: [Colaboradors, EstadoCivils])
 class ColaboradorDao extends DatabaseAccessor<AppDb>
     with _$ColaboradorDaoMixin {
   final AppDb db;
@@ -17,14 +16,15 @@ class ColaboradorDao extends DatabaseAccessor<AppDb>
   List<Colaborador>? listaColaborador;
 
   Future<List<Colaborador>?> consultarLista() async {
-    listaColaborador = await select(colaboradors).get();
+    listaColaborador = await select(colaboradors).get()
+      ..where((c) => c.deletado == 'N');
     return listaColaborador;
   }
 
   Future<List<Colaborador>?> consultarListaFiltro(
       String campo, String valor) async {
     listaColaborador = await (customSelect(
-        "SELECT * FROM tb_colaborador WHERE $campo like '%$valor%'",
+        "SELECT * FROM tb_colaborador WHERE $campo like '%$valor%' AND deletado = 'N'",
         readsFrom: {colaboradors}).map((row) {
       return Colaborador.fromData(row.data);
     }).get());

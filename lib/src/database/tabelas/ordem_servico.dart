@@ -13,6 +13,11 @@ class OrdemServicos extends Table {
       .nullable()
       .customConstraint('NULLABLE REFERENCES tb_usuario(codigo)')();
 
+  IntColumn get codigoColaborador => integer()
+      .named('codigo_colaborador')
+      .nullable()
+      .customConstraint('NULLABLE REFERENCES tb_colaborador(codigo)')();
+
   IntColumn get codigoCategoria => integer()
       .named('codigo_categoria')
       .nullable()
@@ -39,6 +44,8 @@ class OrdemServicos extends Table {
       dateTime().nullable().named('data_abertura')();
   DateTimeColumn get dataEncerramento =>
       dateTime().nullable().named('data_encerramento')();
+  TextColumn get deletado =>
+      text().nullable().withLength(min: 1, max: 1).named('deletado')();
 }
 
 class OrdemServicoMontada {

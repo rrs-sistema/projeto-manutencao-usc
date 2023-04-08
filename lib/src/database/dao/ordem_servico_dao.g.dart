@@ -13,5 +13,6 @@ mixin _$OrdemServicoDaoMixin on DatabaseAccessor<AppDb> {
   $LocalSubsTable get localSubs => attachedDatabase.localSubs;
   $StatusOrdemServicosTable get statusOrdemServicos =>
       attachedDatabase.statusOrdemServicos;
+  $ColaboradorsTable get colaboradors => attachedDatabase.colaboradors;
   $UsuariosTable get usuarios => attachedDatabase.usuarios;
 }

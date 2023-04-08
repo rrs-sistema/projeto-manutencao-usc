@@ -15,7 +15,8 @@ class LocalSubDao extends DatabaseAccessor<AppDb> with _$LocalSubDaoMixin {
   List<LocalSubMontado>? listaLocalSubMontado;
 
   Future<List<LocalSub>?> consultarLista() async {
-    listaSubLocal = await select(localSubs).get();
+    listaSubLocal = await select(localSubs).get()
+      ..where((c) => c.deletado == 'N');
     return listaSubLocal;
   }
 
@@ -54,7 +55,7 @@ class LocalSubDao extends DatabaseAccessor<AppDb> with _$LocalSubDaoMixin {
   Future<List<LocalSub>?> consultarListaFiltro(
       String campo, String valor) async {
     listaSubLocal = await (customSelect(
-        "SELECT * FROM tb_local_sub WHERE $campo like '%$valor%'",
+        "SELECT * FROM tb_local_sub WHERE $campo like '%$valor%' AND deletado = 'N'",
         readsFrom: {localSubs}).map((row) {
       return LocalSub.fromData(row.data);
     }).get());

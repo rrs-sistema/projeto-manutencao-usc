@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:manutencao_usc/src/database/tabelas/colaborador.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './../tabelas/status_ordem_servico.dart';
@@ -18,6 +19,7 @@ part 'ordem_servico_dao.g.dart';
   Locals,
   LocalSubs,
   StatusOrdemServicos,
+  Colaboradors,
   Usuarios
 ])
 class OrdemServicoDao extends DatabaseAccessor<AppDb>
@@ -49,6 +51,7 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
       leftOuterJoin(statusOrdemServicos,
           statusOrdemServicos.codigo.equalsExp(ordemServicos.codigoStatus)),
     ]);
+    consulta.where(ordemServicos.deletado.equals('N'));
     if (codigo != null) {
       consulta.where(ordemServicos.codigo.equals(codigo));
     } else if (mes != null && ano != null) {
@@ -65,6 +68,7 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
     listaOrdemServicoMontada = await consulta.map((row) {
       final ordemServico = row.readTableOrNull(ordemServicos);
       final usuario = row.readTableOrNull(usuarios);
+      //final colaborador = row.readTableOrNull(colaboradors);
       final categoria = row.readTableOrNull(categorias);
       final local = row.readTableOrNull(locals);
       final localSub = row.readTableOrNull(localSubs);
@@ -84,7 +88,7 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
   Future<List<OrdemServico>?> consultarListaFiltro(
       String campo, String valor) async {
     listaOrdemServico = (await (customSelect(
-            "SELECT * FROM tb_ordem_servico WHERE $campo like '%$valor%'",
+            "SELECT * FROM tb_ordem_servico WHERE $campo like '%$valor%' AND deletado = 'N'",
             readsFrom: {ordemServicos}).map((row) {
       return OrdemServico.fromData(row.data);
     }).get()))
@@ -94,7 +98,7 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
 
   Future<OrdemServico?> pegaUltimaOrdemServico() async {
     final resultado = await customSelect(
-            "select * from tb_ordem_servico order by codigo desc LIMIT 1;")
+            "select * from tb_ordem_servico order WHERE deletado = 'N' by codigo desc LIMIT 1;")
         .getSingleOrNull();
     if (resultado == null) return null;
     return OrdemServico.fromData(resultado.data);

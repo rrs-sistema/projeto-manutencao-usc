@@ -17,14 +17,15 @@ class StatusOrdemServicoDao extends DatabaseAccessor<AppDb>
   List<StatusOrdemServico>? listaStatus;
 
   Future<List<StatusOrdemServico>?> consultarLista() async {
-    listaStatus = await select(statusOrdemServicos).get();
+    listaStatus = await select(statusOrdemServicos).get()
+      ..where((c) => c.deletado == 'N');
     return listaStatus;
   }
 
   Future<List<StatusOrdemServico>?> consultarListaFiltro(
       String campo, String valor) async {
     listaStatus = await (customSelect(
-        "SELECT * FROM tb_status_ordem_servico WHERE $campo like '%$valor%'",
+        "SELECT * FROM tb_status_ordem_servico WHERE $campo like '%$valor%' AND deletado = 'N'",
         readsFrom: {statusOrdemServicos}).map((row) {
       return StatusOrdemServico.fromData(row.data);
     }).get());
