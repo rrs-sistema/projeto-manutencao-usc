@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:manutencao_usc/src/view/usuario/login/login_screen.dart';
+import 'package:manutencao_usc/src/view/cadastros/colaborador/sexo_lista_page.dart';
 
 import './../view/cadastros/status_ordem_servico/status_ordem_servico_lista_page.dart';
+import './../view/cadastros/colaborador/colaborador_lista_page.dart';
 import './../view/cadastros/permissao/permissao_lista_page.dart';
 import './../view/cadastros/categoria/categoria_lista_page.dart';
+import './../view/cadastros/colaborador/funcao_lista_page.dart';
 import './../view/cadastros/local/local_sub_lista_page.dart';
 import './../view/cadastros/usuario/usuario_lista_page.dart';
 import './../view/cadastros/local/local_lista_page.dart';
+import './../view/usuario/login/login_screen.dart';
 import './../view/home_page.dart';
 
 class Rotas {
@@ -35,10 +38,21 @@ class Rotas {
       case '/permissaoLista':
         return MaterialPageRoute(
             builder: (context) => const PermissaoListaPage());
-      // Permissão do usuário
+      // Usuário
       case '/usuarioLista':
         return MaterialPageRoute(
             builder: (context) => const UsuarioListaPage());
+      // Função
+      case '/funcaoLista':
+        return MaterialPageRoute(builder: (context) => const FuncaoListaPage());
+      // Colaborador
+      case '/colaboradorLista':
+        return MaterialPageRoute(
+            builder: (context) => const ColaboradorListaPage());
+      // Sexo
+      case '/sexoLista':
+        return MaterialPageRoute(builder: (context) => const SexoListaPage());
+
       case '/login':
         return MaterialPageRoute(builder: (context) => const LoginScreen());
       // default
@@ -68,6 +82,12 @@ class Rotas {
         return const UsuarioListaPage();
       case '/permissaoLista':
         return const PermissaoListaPage();
+      case '/funcaoLista':
+        return const FuncaoListaPage();
+      case '/colaboradorLista':
+        return const ColaboradorListaPage();
+      case '/sexoLista':
+        return const SexoListaPage();
       case '/login':
         return const LoginScreen();
       default:

@@ -2,11 +2,12 @@ import 'package:drift/drift.dart';
 
 import '../tabelas/estado_civil.dart';
 import '../tabelas/colaborador.dart';
+import '../tabelas/sexo.dart';
 import './../app_db.dart';
 
 part 'colaborador_dao.g.dart';
 
-@DriftAccessor(tables: [Colaboradors, EstadoCivils])
+@DriftAccessor(tables: [Colaboradors, EstadoCivils, Sexos])
 class ColaboradorDao extends DatabaseAccessor<AppDb>
     with _$ColaboradorDaoMixin {
   final AppDb db;
@@ -14,6 +15,7 @@ class ColaboradorDao extends DatabaseAccessor<AppDb>
   ColaboradorDao(this.db) : super(db);
 
   List<Colaborador>? listaColaborador;
+  List<ColaboradorMontado>? listaColaboradorMontado;
 
   Future<List<Colaborador>?> consultarLista() async {
     listaColaborador = await select(colaboradors).get()
@@ -31,8 +33,38 @@ class ColaboradorDao extends DatabaseAccessor<AppDb>
     return listaColaborador;
   }
 
+  Future<List<ColaboradorMontado>?> consultarListaMontado(
+      {String? campo, dynamic valor}) async {
+    final consulta = select(colaboradors).join([
+      leftOuterJoin(estadoCivils,
+          estadoCivils.codigo.equalsExp(colaboradors.codigoEstadoCivil)),
+      leftOuterJoin(sexos, sexos.codigo.equalsExp(colaboradors.codigoSexo)),
+    ]);
+    if (campo != null && campo != '') {
+      final coluna = colaboradors.$columns
+          .where(((coluna) => coluna.$name == campo))
+          .first;
+      if (coluna is TextColumn) {
+        consulta.where((coluna as TextColumn).like('%$valor%'));
+      } else if (coluna is IntColumn) {
+        consulta.where(coluna.equals(int.tryParse(valor)));
+      } else if (coluna is RealColumn) {
+        consulta.where(coluna.equals(double.tryParse(valor)));
+      }
+    }
+    listaColaboradorMontado = await consulta.map((row) {
+      final colab = row.readTableOrNull(colaboradors);
+      final estadoCivil = row.readTableOrNull(estadoCivils);
+      final sexo = row.readTableOrNull(sexos);
+      return ColaboradorMontado(
+          colaborador: colab, sexo: sexo, estadoCivil: estadoCivil);
+    }).get();
+    return listaColaboradorMontado;
+  }
+
   Future<int> inserir(Colaborador pObjeto) {
     return transaction(() async {
+      pObjeto = pObjeto.copyWith(deletado: 'N');
       return await into(colaboradors).insert(pObjeto);
     });
   }
@@ -43,9 +75,10 @@ class ColaboradorDao extends DatabaseAccessor<AppDb>
     });
   }
 
-  Future<int> excluir(Colaborador pObjeto) {
+  Future<bool> excluir(Colaborador pObjeto) {
     return transaction(() async {
-      return delete(colaboradors).delete(pObjeto);
+      pObjeto = pObjeto.copyWith(deletado: 'S');
+      return update(colaboradors).replace(pObjeto);
     });
   }
 

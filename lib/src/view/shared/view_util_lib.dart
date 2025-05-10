@@ -136,6 +136,7 @@ class DatePickerItem extends StatelessWidget {
       this.firstDate,
       this.lastDate,
       this.mascara,
+      this.colorTextStyle,
       this.readOnly})
       : date = dateTime == null
             ? null
@@ -145,6 +146,7 @@ class DatePickerItem extends StatelessWidget {
   final DateTime? firstDate;
   final DateTime? lastDate;
   final String? mascara;
+  final Color? colorTextStyle;
   DateTime? date;
   final ValueChanged<DateTime?> onChanged;
   final bool? readOnly;
@@ -154,7 +156,8 @@ class DatePickerItem extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     var hoje = DateTime.now();
     return DefaultTextStyle(
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(
+          color: colorTextStyle ?? Colors.white, fontWeight: FontWeight.bold),
       child: Row(
         children: <Widget>[
           Expanded(

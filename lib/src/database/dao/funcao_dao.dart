@@ -42,9 +42,10 @@ class FuncaoDao extends DatabaseAccessor<AppDb> with _$FuncaoDaoMixin {
     });
   }
 
-  Future<int> excluir(Funcao pObjeto) {
+  Future<bool> excluir(Funcao pObjeto) {
     return transaction(() async {
-      return delete(funcaos).delete(pObjeto);
+      pObjeto = pObjeto.copyWith(deletado: 'S');
+      return update(funcaos).replace(pObjeto);
     });
   }
 

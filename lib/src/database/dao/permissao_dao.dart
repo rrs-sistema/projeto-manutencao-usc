@@ -43,9 +43,10 @@ class PermissaoDao extends DatabaseAccessor<AppDb> with _$PermissaoDaoMixin {
     });
   }
 
-  Future<int> excluir(Permissao pObjeto) {
+  Future<bool> excluir(Permissao pObjeto) {
     return transaction(() async {
-      return delete(permissaos).delete(pObjeto);
+      pObjeto = pObjeto.copyWith(deletado: 'S');
+      return update(permissaos).replace(pObjeto);
     });
   }
 

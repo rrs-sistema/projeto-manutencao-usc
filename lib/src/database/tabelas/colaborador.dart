@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+
 import './../../database/app_db.dart';
 
 class Colaboradors extends Table {
@@ -10,12 +11,16 @@ class Colaboradors extends Table {
       .named('codigo_estado_civil')
       .nullable()
       .customConstraint('NULLABLE REFERENCES tb_estado_civil(codigo)')();
+  IntColumn get codigoSexo => integer()
+      .named('codigo_sexo')
+      .nullable()
+      .customConstraint('NULLABLE REFERENCES tb_sexo(codigo)')();
+
   TextColumn get matricula =>
       text().nullable().withLength(max: 20).named('matricula')();
   TextColumn get nome =>
       text().nullable().withLength(min: 5, max: 180).named('nome')();
-  TextColumn get sexo =>
-      text().nullable().withLength(min: 1, max: 1).named('sexo')();
+
   TextColumn get email =>
       text().nullable().withLength(max: 254).named('email')();
   TextColumn get celular =>
@@ -31,11 +36,13 @@ class Colaboradors extends Table {
 }
 
 class ColaboradorMontado {
-  ColaboradorFuncao? colaboradorFuncao;
-  Funcao? funcao;
+  Colaborador? colaborador;
+  EstadoCivil? estadoCivil;
+  Sexo? sexo;
 
   ColaboradorMontado({
-    this.colaboradorFuncao,
-    this.funcao,
+    this.colaborador,
+    this.estadoCivil,
+    this.sexo,
   });
 }

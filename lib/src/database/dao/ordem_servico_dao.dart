@@ -98,7 +98,7 @@ class OrdemServicoDao extends DatabaseAccessor<AppDb>
 
   Future<OrdemServico?> pegaUltimaOrdemServico() async {
     final resultado = await customSelect(
-            "select * from tb_ordem_servico order WHERE deletado = 'N' by codigo desc LIMIT 1;")
+            "select * from tb_ordem_servico WHERE deletado = 'N' order by codigo desc LIMIT 1;")
         .getSingleOrNull();
     if (resultado == null) return null;
     return OrdemServico.fromData(resultado.data);

@@ -147,17 +147,17 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
                     child: InputDecorator(
                       decoration: getInputDecoration(
                           Biblioteca.isDesktop()
-                              ? 'Mês/Ano para o filtro'
-                              : 'Mês/Ano',
+                              ? 'Mês/ano para o filtro'
+                              : 'Mês/ano',
                           Biblioteca.isDesktop()
-                              ? 'Mês/Ano para o filtro'
-                              : 'Mês/Ano',
+                              ? 'Mês/ano para o filtro'
+                              : 'Mês/ano',
                           true,
                           cor: Constantes.primaryColor,
-                          labelStyleHint: const TextStyle(
+                          labelStyleHint: const TextStyle(color: Colors.white),
+                          labelStyle: const TextStyle(
                             color: Colors.white,
-                          ),
-                          labelStyle: const TextStyle(color: Colors.white)),
+                          )),
                       child: DatePickerItem(
                         mascara: 'MM/yyyy',
                         dateTime: _mesAno,
@@ -190,7 +190,7 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
                           paddingVertical: 1),
                       isEmpty: _statusOrdensServico == null,
                       child: getDropDownButton(_statusOrdensServico,
-                          (String? newValue) {
+                          colorTextStyle: Colors.white, (String? newValue) {
                         _statusOrdensServico = newValue;
                         _refrescarTela();
                       }, _listaStatus),
@@ -415,7 +415,7 @@ class OrdenServicoListaPageState extends State<OrdenServicoListaPage> {
     Navigator.of(context)
         .push(MaterialPageRoute(
             builder: (BuildContext context) => OrdemServicoPersistePage(
-                ordemServicoMontado: OrdemServicoMontada(
+                osMontada: OrdemServicoMontada(
                     ordemServico: OrdemServico(),
                     categoria: Categoria(),
                     local: Local(),
@@ -612,7 +612,7 @@ void _detalharOdemServico(OrdemServicoMontada ordemServicoMontada,
   Navigator.of(context)
       .push(MaterialPageRoute(
           builder: (BuildContext context) => OrdemServicoPersistePage(
-              ordemServicoMontado: ordemServicoMontada,
+              osMontada: ordemServicoMontada,
               title: 'Ordem de Serviço - Editando',
               operacao: 'A')))
       .then((_) async {

@@ -1,39 +1,34 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_bootstrap/flutter_bootstrap.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:manutencao_usc/src/database/app_db.dart';
-import 'package:manutencao_usc/src/database/dao/local_dao.dart';
-import 'package:manutencao_usc/src/database/dao/local_sub_dao.dart';
-import 'package:manutencao_usc/src/view/shared/botoes.dart';
-import 'package:manutencao_usc/src/view/shared/gradiente_app.dart';
+import 'dart:convert';
 
 import './../../view/shared/page/lookup_local_page.dart';
 import './../../database/tabelas/ordem_servico.dart';
 import './../../infra/valida_campo_formulario.dart';
 import './../../view/shared/caixas_de_dialogo.dart';
+import './../../database/dao/local_sub_dao.dart';
 import './../../database/dao/categoria_dao.dart';
 import './../../infra/atalhos_desktop_web.dart';
 import './../../view/shared/view_util_lib.dart';
 import './../../view/shared/widgets_input.dart';
+import './../../view/shared/gradiente_app.dart';
+import './../../database/dao/local_dao.dart';
+import './../../view/shared/botoes.dart';
 import './../../infra/biblioteca.dart';
 import './../../infra/constantes.dart';
+import './../../database/app_db.dart';
 import './../../infra/sessao.dart';
 
 class OrdemServicoPersistePage extends StatefulWidget {
-  final OrdemServicoMontada? ordemServicoMontado;
+  final OrdemServicoMontada? osMontada;
   final String? operacao;
   final String? title;
   final FocusNode? foco;
 
   const OrdemServicoPersistePage(
-      {Key? key,
-      this.ordemServicoMontado,
-      this.foco,
-      this.operacao,
-      this.title})
+      {Key? key, this.osMontada, this.foco, this.operacao, this.title})
       : super(key: key);
 
   @override
@@ -72,11 +67,11 @@ class OrdemServicoPersistePageState extends State<OrdemServicoPersistePage> {
         onInvoke: _tratarAcoesAtalhos,
       ),
     };
-    _ordemServico = widget.ordemServicoMontado?.ordemServico;
-    _categoria = widget.ordemServicoMontado?.categoria;
-    _local = widget.ordemServicoMontado?.local;
-    _localSub = widget.ordemServicoMontado?.localSub;
-    _status = widget.ordemServicoMontado?.statusOrdemServico;
+    _ordemServico = widget.osMontada?.ordemServico;
+    _categoria = widget.osMontada?.categoria;
+    _local = widget.osMontada?.local;
+    _localSub = widget.osMontada?.localSub;
+    _status = widget.osMontada?.statusOrdemServico;
 
     _foco.requestFocus();
     if (controllerScroll.hasClients) {

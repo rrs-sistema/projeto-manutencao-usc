@@ -88,10 +88,10 @@ class UsuarioDao extends DatabaseAccessor<AppDb> with _$UsuarioDaoMixin {
     });
   }
 
-  Future<int> excluir(Usuario usuario) {
-    usuario = usuario.copyWith(deletado: 'S');
+  Future<bool> excluir(Usuario pObjeto) {
     return transaction(() async {
-      return delete(usuarios).delete(usuario);
+      pObjeto = pObjeto.copyWith(deletado: 'S');
+      return update(usuarios).replace(pObjeto);
     });
   }
 

@@ -74,9 +74,10 @@ class LocalSubDao extends DatabaseAccessor<AppDb> with _$LocalSubDaoMixin {
     });
   }
 
-  Future<int> excluir(LocalSub pObjeto) {
+  Future<bool> excluir(LocalSub pObjeto) {
     return transaction(() async {
-      return delete(localSubs).delete(pObjeto);
+      pObjeto = pObjeto.copyWith(deletado: 'S');
+      return update(localSubs).replace(pObjeto);
     });
   }
 

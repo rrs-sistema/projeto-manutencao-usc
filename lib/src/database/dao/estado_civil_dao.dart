@@ -14,21 +14,21 @@ class EstadoCivilDao extends DatabaseAccessor<AppDb>
 
   EstadoCivilDao(this.db) : super(db);
 
-  List<EstadoCivil>? listaLocal;
+  List<EstadoCivil>? listaEstadoCivil;
 
   Future<List<EstadoCivil>?> consultarLista() async {
-    listaLocal = await select(estadoCivils).get();
-    return listaLocal;
+    listaEstadoCivil = await select(estadoCivils).get();
+    return listaEstadoCivil;
   }
 
   Future<List<EstadoCivil>?> consultarListaFiltro(
       String campo, String valor) async {
-    listaLocal = await (customSelect(
-        "SELECT * FROM tb_local WHERE $campo like '%$valor%' AND deletado = 'N'",
+    listaEstadoCivil = await (customSelect(
+        "SELECT * FROM tb_estado_civil WHERE $campo like '%$valor%' AND deletado = 'N'",
         readsFrom: {estadoCivils}).map((row) {
       return EstadoCivil.fromData(row.data);
     }).get());
-    return listaLocal;
+    return listaEstadoCivil;
   }
 
   Future<int> inserir(EstadoCivil pObjeto) {
@@ -43,9 +43,10 @@ class EstadoCivilDao extends DatabaseAccessor<AppDb>
     });
   }
 
-  Future<int> excluir(EstadoCivil pObjeto) {
+  Future<bool> excluir(EstadoCivil pObjeto) {
     return transaction(() async {
-      return delete(estadoCivils).delete(pObjeto);
+      pObjeto = pObjeto.copyWith(deletado: 'S');
+      return update(estadoCivils).replace(pObjeto);
     });
   }
 

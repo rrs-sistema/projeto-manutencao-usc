@@ -201,15 +201,13 @@ class _TabHomeState extends State<TabHome> {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (BuildContext context) =>
                                         OrdemServicoPersistePage(
-                                            ordemServicoMontado:
-                                                OrdemServicoMontada(
-                                                    ordemServico:
-                                                        OrdemServico(),
-                                                    categoria: Categoria(),
-                                                    local: Local(),
-                                                    localSub: LocalSub(),
-                                                    statusOrdemServico:
-                                                        StatusOrdemServico()),
+                                            osMontada: OrdemServicoMontada(
+                                                ordemServico: OrdemServico(),
+                                                categoria: Categoria(),
+                                                local: Local(),
+                                                localSub: LocalSub(),
+                                                statusOrdemServico:
+                                                    StatusOrdemServico()),
                                             title:
                                                 'Ordem de Serviço - Inserindo',
                                             operacao: 'I')));
@@ -282,7 +280,7 @@ class _TabHomeState extends State<TabHome> {
                                           .push(MaterialPageRoute(
                                               builder: (BuildContext context) =>
                                                   OrdemServicoPersistePage(
-                                                      ordemServicoMontado:
+                                                      osMontada:
                                                           ordemServicoMontada![
                                                               0],
                                                       title:

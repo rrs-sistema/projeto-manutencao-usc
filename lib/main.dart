@@ -11,7 +11,10 @@ import 'package:sqlite3/open.dart';
 import 'dart:ffi' hide Size;
 import 'dart:io';
 
+import './src/view/cadastros/colaborador/colaborador_persiste_page.dart';
+import './src/view/cadastros/colaborador/colaborador_lista_page.dart';
 import './src/view/shared/page/splash_screen_pagev.dart';
+import './src/database/tabelas/colaborador.dart';
 import './src/view/shared/custom_animation.dart';
 import './src/database/app_db.dart';
 import './src/view/home_page.dart';
@@ -129,6 +132,17 @@ Widget _materialApp({bool? splash}) {
     onGenerateRoute: Rotas.definirRotas,
     theme: ThemeData(),
     home: splash == true ? const SplashScreenPage() : const HomePage(),
+    //home: splash == true ? const SplashScreenPage() : const ColaboradorListaPage(),
+    /*home: splash == true
+        ? const SplashScreenPage()
+        : ColaboradorPersistePage(
+            operacao: 'I',
+            title: 'Inserindo',
+            montado: ColaboradorMontado(
+                estadoCivil: EstadoCivil(),
+                colaborador: Colaborador(),
+                sexo: Sexo())),
+                */
     //home: splash == true ? const SplashScreenPage() : const UsuarioPage(),
     builder: EasyLoading.init(),
   );

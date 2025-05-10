@@ -43,9 +43,10 @@ class CategoriaDao extends DatabaseAccessor<AppDb> with _$CategoriaDaoMixin {
     });
   }
 
-  Future<int> excluir(Categoria pObjeto) {
+  Future<bool> excluir(Categoria pObjeto) {
     return transaction(() async {
-      return delete(categorias).delete(pObjeto);
+      pObjeto = pObjeto.copyWith(deletado: 'S');
+      return update(categorias).replace(pObjeto);
     });
   }
 

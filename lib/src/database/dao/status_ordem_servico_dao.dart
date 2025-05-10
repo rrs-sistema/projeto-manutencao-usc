@@ -44,9 +44,10 @@ class StatusOrdemServicoDao extends DatabaseAccessor<AppDb>
     });
   }
 
-  Future<int> excluir(StatusOrdemServico pObjeto) {
+  Future<bool> excluir(StatusOrdemServico pObjeto) {
     return transaction(() async {
-      return delete(statusOrdemServicos).delete(pObjeto);
+      pObjeto = pObjeto.copyWith(deletado: 'S');
+      return update(statusOrdemServicos).replace(pObjeto);
     });
   }
 

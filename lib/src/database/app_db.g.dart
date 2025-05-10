@@ -2412,6 +2412,222 @@ class $UsuarioPermissaosTable extends UsuarioPermissaos
   }
 }
 
+class Sexo extends DataClass implements Insertable<Sexo> {
+  final int? codigo;
+  final String? nome;
+  final String? deletado;
+  Sexo({this.codigo, this.nome, this.deletado});
+  factory Sexo.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return Sexo(
+      codigo: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
+      nome: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}nome']),
+      deletado: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}deletado']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || codigo != null) {
+      map['codigo'] = Variable<int?>(codigo);
+    }
+    if (!nullToAbsent || nome != null) {
+      map['nome'] = Variable<String?>(nome);
+    }
+    if (!nullToAbsent || deletado != null) {
+      map['deletado'] = Variable<String?>(deletado);
+    }
+    return map;
+  }
+
+  SexosCompanion toCompanion(bool nullToAbsent) {
+    return SexosCompanion(
+      codigo:
+          codigo == null && nullToAbsent ? const Value.absent() : Value(codigo),
+      nome: nome == null && nullToAbsent ? const Value.absent() : Value(nome),
+      deletado: deletado == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletado),
+    );
+  }
+
+  factory Sexo.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Sexo(
+      codigo: serializer.fromJson<int?>(json['codigo']),
+      nome: serializer.fromJson<String?>(json['nome']),
+      deletado: serializer.fromJson<String?>(json['deletado']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'codigo': serializer.toJson<int?>(codigo),
+      'nome': serializer.toJson<String?>(nome),
+      'deletado': serializer.toJson<String?>(deletado),
+    };
+  }
+
+  Sexo copyWith({int? codigo, String? nome, String? deletado}) => Sexo(
+        codigo: codigo ?? this.codigo,
+        nome: nome ?? this.nome,
+        deletado: deletado ?? this.deletado,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Sexo(')
+          ..write('codigo: $codigo, ')
+          ..write('nome: $nome, ')
+          ..write('deletado: $deletado')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(codigo, nome, deletado);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Sexo &&
+          other.codigo == this.codigo &&
+          other.nome == this.nome &&
+          other.deletado == this.deletado);
+}
+
+class SexosCompanion extends UpdateCompanion<Sexo> {
+  final Value<int?> codigo;
+  final Value<String?> nome;
+  final Value<String?> deletado;
+  const SexosCompanion({
+    this.codigo = const Value.absent(),
+    this.nome = const Value.absent(),
+    this.deletado = const Value.absent(),
+  });
+  SexosCompanion.insert({
+    this.codigo = const Value.absent(),
+    this.nome = const Value.absent(),
+    this.deletado = const Value.absent(),
+  });
+  static Insertable<Sexo> custom({
+    Expression<int?>? codigo,
+    Expression<String?>? nome,
+    Expression<String?>? deletado,
+  }) {
+    return RawValuesInsertable({
+      if (codigo != null) 'codigo': codigo,
+      if (nome != null) 'nome': nome,
+      if (deletado != null) 'deletado': deletado,
+    });
+  }
+
+  SexosCompanion copyWith(
+      {Value<int?>? codigo, Value<String?>? nome, Value<String?>? deletado}) {
+    return SexosCompanion(
+      codigo: codigo ?? this.codigo,
+      nome: nome ?? this.nome,
+      deletado: deletado ?? this.deletado,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (codigo.present) {
+      map['codigo'] = Variable<int?>(codigo.value);
+    }
+    if (nome.present) {
+      map['nome'] = Variable<String?>(nome.value);
+    }
+    if (deletado.present) {
+      map['deletado'] = Variable<String?>(deletado.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SexosCompanion(')
+          ..write('codigo: $codigo, ')
+          ..write('nome: $nome, ')
+          ..write('deletado: $deletado')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SexosTable extends Sexos with TableInfo<$SexosTable, Sexo> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SexosTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _codigoMeta = const VerificationMeta('codigo');
+  @override
+  late final GeneratedColumn<int?> codigo = GeneratedColumn<int?>(
+      'codigo', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+  final VerificationMeta _nomeMeta = const VerificationMeta('nome');
+  @override
+  late final GeneratedColumn<String?> nome = GeneratedColumn<String?>(
+      'nome', aliasedName, true,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 3, maxTextLength: 50),
+      type: const StringType(),
+      requiredDuringInsert: false);
+  final VerificationMeta _deletadoMeta = const VerificationMeta('deletado');
+  @override
+  late final GeneratedColumn<String?> deletado = GeneratedColumn<String?>(
+      'deletado', aliasedName, true,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 1),
+      type: const StringType(),
+      requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [codigo, nome, deletado];
+  @override
+  String get aliasedName => _alias ?? 'tb_sexo';
+  @override
+  String get actualTableName => 'tb_sexo';
+  @override
+  VerificationContext validateIntegrity(Insertable<Sexo> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('codigo')) {
+      context.handle(_codigoMeta,
+          codigo.isAcceptableOrUnknown(data['codigo']!, _codigoMeta));
+    }
+    if (data.containsKey('nome')) {
+      context.handle(
+          _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
+    }
+    if (data.containsKey('deletado')) {
+      context.handle(_deletadoMeta,
+          deletado.isAcceptableOrUnknown(data['deletado']!, _deletadoMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {codigo};
+  @override
+  Sexo map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return Sexo.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $SexosTable createAlias(String alias) {
+    return $SexosTable(attachedDatabase, alias);
+  }
+}
+
 class EstadoCivil extends DataClass implements Insertable<EstadoCivil> {
   final int? codigo;
   final String? nome;
@@ -2633,9 +2849,9 @@ class $EstadoCivilsTable extends EstadoCivils
 class Colaborador extends DataClass implements Insertable<Colaborador> {
   final int? codigo;
   final int? codigoEstadoCivil;
+  final int? codigoSexo;
   final String? matricula;
   final String? nome;
-  final String? sexo;
   final String? email;
   final String? celular;
   final String? telefone;
@@ -2645,9 +2861,9 @@ class Colaborador extends DataClass implements Insertable<Colaborador> {
   Colaborador(
       {this.codigo,
       this.codigoEstadoCivil,
+      this.codigoSexo,
       this.matricula,
       this.nome,
-      this.sexo,
       this.email,
       this.celular,
       this.telefone,
@@ -2661,12 +2877,12 @@ class Colaborador extends DataClass implements Insertable<Colaborador> {
           .mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
       codigoEstadoCivil: const IntType().mapFromDatabaseResponse(
           data['${effectivePrefix}codigo_estado_civil']),
+      codigoSexo: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}codigo_sexo']),
       matricula: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}matricula']),
       nome: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}nome']),
-      sexo: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}sexo']),
       email: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}email']),
       celular: const StringType()
@@ -2690,14 +2906,14 @@ class Colaborador extends DataClass implements Insertable<Colaborador> {
     if (!nullToAbsent || codigoEstadoCivil != null) {
       map['codigo_estado_civil'] = Variable<int?>(codigoEstadoCivil);
     }
+    if (!nullToAbsent || codigoSexo != null) {
+      map['codigo_sexo'] = Variable<int?>(codigoSexo);
+    }
     if (!nullToAbsent || matricula != null) {
       map['matricula'] = Variable<String?>(matricula);
     }
     if (!nullToAbsent || nome != null) {
       map['nome'] = Variable<String?>(nome);
-    }
-    if (!nullToAbsent || sexo != null) {
-      map['sexo'] = Variable<String?>(sexo);
     }
     if (!nullToAbsent || email != null) {
       map['email'] = Variable<String?>(email);
@@ -2727,11 +2943,13 @@ class Colaborador extends DataClass implements Insertable<Colaborador> {
       codigoEstadoCivil: codigoEstadoCivil == null && nullToAbsent
           ? const Value.absent()
           : Value(codigoEstadoCivil),
+      codigoSexo: codigoSexo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(codigoSexo),
       matricula: matricula == null && nullToAbsent
           ? const Value.absent()
           : Value(matricula),
       nome: nome == null && nullToAbsent ? const Value.absent() : Value(nome),
-      sexo: sexo == null && nullToAbsent ? const Value.absent() : Value(sexo),
       email:
           email == null && nullToAbsent ? const Value.absent() : Value(email),
       celular: celular == null && nullToAbsent
@@ -2758,9 +2976,9 @@ class Colaborador extends DataClass implements Insertable<Colaborador> {
     return Colaborador(
       codigo: serializer.fromJson<int?>(json['codigo']),
       codigoEstadoCivil: serializer.fromJson<int?>(json['codigoEstadoCivil']),
+      codigoSexo: serializer.fromJson<int?>(json['codigoSexo']),
       matricula: serializer.fromJson<String?>(json['matricula']),
       nome: serializer.fromJson<String?>(json['nome']),
-      sexo: serializer.fromJson<String?>(json['sexo']),
       email: serializer.fromJson<String?>(json['email']),
       celular: serializer.fromJson<String?>(json['celular']),
       telefone: serializer.fromJson<String?>(json['telefone']),
@@ -2775,9 +2993,9 @@ class Colaborador extends DataClass implements Insertable<Colaborador> {
     return <String, dynamic>{
       'codigo': serializer.toJson<int?>(codigo),
       'codigoEstadoCivil': serializer.toJson<int?>(codigoEstadoCivil),
+      'codigoSexo': serializer.toJson<int?>(codigoSexo),
       'matricula': serializer.toJson<String?>(matricula),
       'nome': serializer.toJson<String?>(nome),
-      'sexo': serializer.toJson<String?>(sexo),
       'email': serializer.toJson<String?>(email),
       'celular': serializer.toJson<String?>(celular),
       'telefone': serializer.toJson<String?>(telefone),
@@ -2790,9 +3008,9 @@ class Colaborador extends DataClass implements Insertable<Colaborador> {
   Colaborador copyWith(
           {int? codigo,
           int? codigoEstadoCivil,
+          int? codigoSexo,
           String? matricula,
           String? nome,
-          String? sexo,
           String? email,
           String? celular,
           String? telefone,
@@ -2802,9 +3020,9 @@ class Colaborador extends DataClass implements Insertable<Colaborador> {
       Colaborador(
         codigo: codigo ?? this.codigo,
         codigoEstadoCivil: codigoEstadoCivil ?? this.codigoEstadoCivil,
+        codigoSexo: codigoSexo ?? this.codigoSexo,
         matricula: matricula ?? this.matricula,
         nome: nome ?? this.nome,
-        sexo: sexo ?? this.sexo,
         email: email ?? this.email,
         celular: celular ?? this.celular,
         telefone: telefone ?? this.telefone,
@@ -2817,9 +3035,9 @@ class Colaborador extends DataClass implements Insertable<Colaborador> {
     return (StringBuffer('Colaborador(')
           ..write('codigo: $codigo, ')
           ..write('codigoEstadoCivil: $codigoEstadoCivil, ')
+          ..write('codigoSexo: $codigoSexo, ')
           ..write('matricula: $matricula, ')
           ..write('nome: $nome, ')
-          ..write('sexo: $sexo, ')
           ..write('email: $email, ')
           ..write('celular: $celular, ')
           ..write('telefone: $telefone, ')
@@ -2831,17 +3049,27 @@ class Colaborador extends DataClass implements Insertable<Colaborador> {
   }
 
   @override
-  int get hashCode => Object.hash(codigo, codigoEstadoCivil, matricula, nome,
-      sexo, email, celular, telefone, dataAdmissao, dataDemissao, deletado);
+  int get hashCode => Object.hash(
+      codigo,
+      codigoEstadoCivil,
+      codigoSexo,
+      matricula,
+      nome,
+      email,
+      celular,
+      telefone,
+      dataAdmissao,
+      dataDemissao,
+      deletado);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Colaborador &&
           other.codigo == this.codigo &&
           other.codigoEstadoCivil == this.codigoEstadoCivil &&
+          other.codigoSexo == this.codigoSexo &&
           other.matricula == this.matricula &&
           other.nome == this.nome &&
-          other.sexo == this.sexo &&
           other.email == this.email &&
           other.celular == this.celular &&
           other.telefone == this.telefone &&
@@ -2853,9 +3081,9 @@ class Colaborador extends DataClass implements Insertable<Colaborador> {
 class ColaboradorsCompanion extends UpdateCompanion<Colaborador> {
   final Value<int?> codigo;
   final Value<int?> codigoEstadoCivil;
+  final Value<int?> codigoSexo;
   final Value<String?> matricula;
   final Value<String?> nome;
-  final Value<String?> sexo;
   final Value<String?> email;
   final Value<String?> celular;
   final Value<String?> telefone;
@@ -2865,9 +3093,9 @@ class ColaboradorsCompanion extends UpdateCompanion<Colaborador> {
   const ColaboradorsCompanion({
     this.codigo = const Value.absent(),
     this.codigoEstadoCivil = const Value.absent(),
+    this.codigoSexo = const Value.absent(),
     this.matricula = const Value.absent(),
     this.nome = const Value.absent(),
-    this.sexo = const Value.absent(),
     this.email = const Value.absent(),
     this.celular = const Value.absent(),
     this.telefone = const Value.absent(),
@@ -2878,9 +3106,9 @@ class ColaboradorsCompanion extends UpdateCompanion<Colaborador> {
   ColaboradorsCompanion.insert({
     this.codigo = const Value.absent(),
     this.codigoEstadoCivil = const Value.absent(),
+    this.codigoSexo = const Value.absent(),
     this.matricula = const Value.absent(),
     this.nome = const Value.absent(),
-    this.sexo = const Value.absent(),
     this.email = const Value.absent(),
     this.celular = const Value.absent(),
     this.telefone = const Value.absent(),
@@ -2891,9 +3119,9 @@ class ColaboradorsCompanion extends UpdateCompanion<Colaborador> {
   static Insertable<Colaborador> custom({
     Expression<int?>? codigo,
     Expression<int?>? codigoEstadoCivil,
+    Expression<int?>? codigoSexo,
     Expression<String?>? matricula,
     Expression<String?>? nome,
-    Expression<String?>? sexo,
     Expression<String?>? email,
     Expression<String?>? celular,
     Expression<String?>? telefone,
@@ -2904,9 +3132,9 @@ class ColaboradorsCompanion extends UpdateCompanion<Colaborador> {
     return RawValuesInsertable({
       if (codigo != null) 'codigo': codigo,
       if (codigoEstadoCivil != null) 'codigo_estado_civil': codigoEstadoCivil,
+      if (codigoSexo != null) 'codigo_sexo': codigoSexo,
       if (matricula != null) 'matricula': matricula,
       if (nome != null) 'nome': nome,
-      if (sexo != null) 'sexo': sexo,
       if (email != null) 'email': email,
       if (celular != null) 'celular': celular,
       if (telefone != null) 'telefone': telefone,
@@ -2919,9 +3147,9 @@ class ColaboradorsCompanion extends UpdateCompanion<Colaborador> {
   ColaboradorsCompanion copyWith(
       {Value<int?>? codigo,
       Value<int?>? codigoEstadoCivil,
+      Value<int?>? codigoSexo,
       Value<String?>? matricula,
       Value<String?>? nome,
-      Value<String?>? sexo,
       Value<String?>? email,
       Value<String?>? celular,
       Value<String?>? telefone,
@@ -2931,9 +3159,9 @@ class ColaboradorsCompanion extends UpdateCompanion<Colaborador> {
     return ColaboradorsCompanion(
       codigo: codigo ?? this.codigo,
       codigoEstadoCivil: codigoEstadoCivil ?? this.codigoEstadoCivil,
+      codigoSexo: codigoSexo ?? this.codigoSexo,
       matricula: matricula ?? this.matricula,
       nome: nome ?? this.nome,
-      sexo: sexo ?? this.sexo,
       email: email ?? this.email,
       celular: celular ?? this.celular,
       telefone: telefone ?? this.telefone,
@@ -2952,14 +3180,14 @@ class ColaboradorsCompanion extends UpdateCompanion<Colaborador> {
     if (codigoEstadoCivil.present) {
       map['codigo_estado_civil'] = Variable<int?>(codigoEstadoCivil.value);
     }
+    if (codigoSexo.present) {
+      map['codigo_sexo'] = Variable<int?>(codigoSexo.value);
+    }
     if (matricula.present) {
       map['matricula'] = Variable<String?>(matricula.value);
     }
     if (nome.present) {
       map['nome'] = Variable<String?>(nome.value);
-    }
-    if (sexo.present) {
-      map['sexo'] = Variable<String?>(sexo.value);
     }
     if (email.present) {
       map['email'] = Variable<String?>(email.value);
@@ -2987,9 +3215,9 @@ class ColaboradorsCompanion extends UpdateCompanion<Colaborador> {
     return (StringBuffer('ColaboradorsCompanion(')
           ..write('codigo: $codigo, ')
           ..write('codigoEstadoCivil: $codigoEstadoCivil, ')
+          ..write('codigoSexo: $codigoSexo, ')
           ..write('matricula: $matricula, ')
           ..write('nome: $nome, ')
-          ..write('sexo: $sexo, ')
           ..write('email: $email, ')
           ..write('celular: $celular, ')
           ..write('telefone: $telefone, ')
@@ -3022,6 +3250,13 @@ class $ColaboradorsTable extends Colaboradors
       type: const IntType(),
       requiredDuringInsert: false,
       $customConstraints: 'NULLABLE REFERENCES tb_estado_civil(codigo)');
+  final VerificationMeta _codigoSexoMeta = const VerificationMeta('codigoSexo');
+  @override
+  late final GeneratedColumn<int?> codigoSexo = GeneratedColumn<int?>(
+      'codigo_sexo', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      $customConstraints: 'NULLABLE REFERENCES tb_sexo(codigo)');
   final VerificationMeta _matriculaMeta = const VerificationMeta('matricula');
   @override
   late final GeneratedColumn<String?> matricula = GeneratedColumn<String?>(
@@ -3035,14 +3270,6 @@ class $ColaboradorsTable extends Colaboradors
       'nome', aliasedName, true,
       additionalChecks:
           GeneratedColumn.checkTextLength(minTextLength: 5, maxTextLength: 180),
-      type: const StringType(),
-      requiredDuringInsert: false);
-  final VerificationMeta _sexoMeta = const VerificationMeta('sexo');
-  @override
-  late final GeneratedColumn<String?> sexo = GeneratedColumn<String?>(
-      'sexo', aliasedName, true,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 1),
       type: const StringType(),
       requiredDuringInsert: false);
   final VerificationMeta _emailMeta = const VerificationMeta('email');
@@ -3090,9 +3317,9 @@ class $ColaboradorsTable extends Colaboradors
   List<GeneratedColumn> get $columns => [
         codigo,
         codigoEstadoCivil,
+        codigoSexo,
         matricula,
         nome,
-        sexo,
         email,
         celular,
         telefone,
@@ -3119,6 +3346,12 @@ class $ColaboradorsTable extends Colaboradors
           codigoEstadoCivil.isAcceptableOrUnknown(
               data['codigo_estado_civil']!, _codigoEstadoCivilMeta));
     }
+    if (data.containsKey('codigo_sexo')) {
+      context.handle(
+          _codigoSexoMeta,
+          codigoSexo.isAcceptableOrUnknown(
+              data['codigo_sexo']!, _codigoSexoMeta));
+    }
     if (data.containsKey('matricula')) {
       context.handle(_matriculaMeta,
           matricula.isAcceptableOrUnknown(data['matricula']!, _matriculaMeta));
@@ -3126,10 +3359,6 @@ class $ColaboradorsTable extends Colaboradors
     if (data.containsKey('nome')) {
       context.handle(
           _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
-    }
-    if (data.containsKey('sexo')) {
-      context.handle(
-          _sexoMeta, sexo.isAcceptableOrUnknown(data['sexo']!, _sexoMeta));
     }
     if (data.containsKey('email')) {
       context.handle(
@@ -3757,6 +3986,7 @@ abstract class _$AppDb extends GeneratedDatabase {
   late final $PermissaosTable permissaos = $PermissaosTable(this);
   late final $UsuarioPermissaosTable usuarioPermissaos =
       $UsuarioPermissaosTable(this);
+  late final $SexosTable sexos = $SexosTable(this);
   late final $EstadoCivilsTable estadoCivils = $EstadoCivilsTable(this);
   late final $ColaboradorsTable colaboradors = $ColaboradorsTable(this);
   late final $FuncaosTable funcaos = $FuncaosTable(this);
@@ -3772,6 +4002,8 @@ abstract class _$AppDb extends GeneratedDatabase {
   late final PermissaoDao permissaoDao = PermissaoDao(this as AppDb);
   late final UsuarioPermissaoDao usuarioPermissaoDao =
       UsuarioPermissaoDao(this as AppDb);
+  late final SexoDao sexoDao = SexoDao(this as AppDb);
+  late final EstadoCivilDao estadoCivilDao = EstadoCivilDao(this as AppDb);
   late final FuncaoDao funcaoDao = FuncaoDao(this as AppDb);
   late final ColaboradorDao colaboradorDao = ColaboradorDao(this as AppDb);
   late final ColaboradorFuncaoDao colaboradorFuncaoDao =
@@ -3788,6 +4020,7 @@ abstract class _$AppDb extends GeneratedDatabase {
         usuarios,
         permissaos,
         usuarioPermissaos,
+        sexos,
         estadoCivils,
         colaboradors,
         funcaos,

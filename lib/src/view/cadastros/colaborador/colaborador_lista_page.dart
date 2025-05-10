@@ -1,33 +1,35 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import './../../../view/shared/caixas_de_dialogo.dart';
 import './../../../view/shared/page/filtro_page.dart';
 import './../../../model/transiente/transiente.dart';
-import './../../../database/dao/permissao_dao.dart';
+import './../../../database/dao/colaborador_dao.dart';
+import './../../../database/tabelas/colaborador.dart';
+import './../../../infra/atalhos_desktop_web.dart';
 import './../../../view/shared/view_util_lib.dart';
 import './../../../view/shared/gradiente_app.dart';
-import './../../../infra/atalhos_desktop_web.dart';
 import './../../../view/shared/botoes.dart';
+import './colaborador_persiste_page.dart';
 import './../../../database/app_db.dart';
 import './../../../infra/sessao.dart';
 import './../../../infra/infra.dart';
 
-class PermissaoListaPage extends StatefulWidget {
-  const PermissaoListaPage({Key? key}) : super(key: key);
+class ColaboradorListaPage extends StatefulWidget {
+  const ColaboradorListaPage({Key? key}) : super(key: key);
 
   @override
-  PermissaoListaPageState createState() => PermissaoListaPageState();
+  ColaboradorListaPageState createState() => ColaboradorListaPageState();
 }
 
-class PermissaoListaPageState extends State<PermissaoListaPage> {
+class ColaboradorListaPageState extends State<ColaboradorListaPage> {
   int? _rowsPerPage = Constantes.paginatedDataTableLinhasPorPagina;
   int? _sortColumnIndex;
   bool _sortAscending = true;
-
   Filtro? _filtro = Filtro();
-  final _colunas = PermissaoDao.colunas;
-  final _campos = PermissaoDao.campos;
+  final _colunas = ColaboradorDao.colunas;
+  final _campos = ColaboradorDao.campos;
 
   Map<LogicalKeySet, Intent>? _shortcutMap;
   Map<Type, Action<Intent>>? _actionMap;
@@ -55,7 +57,7 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
   void _tratarAcoesAtalhos(AtalhoTelaIntent intent) {
     switch (intent.type) {
       case AtalhoTelaType.inserir:
-        // _inserir();
+        _inserir();
         break;
       case AtalhoTelaType.imprimir:
         _gerarRelatorio();
@@ -70,15 +72,17 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
 
   @override
   Widget build(BuildContext context) {
-    final listaPermissao = Sessao.db.permissaoDao.listaPermissao;
+    final listaSubLocal = Sessao.db.colaboradorDao.listaColaboradorMontado;
 
-    final _PermissaoDataSource permissaoDataSource =
-        _PermissaoDataSource(listaPermissao, context, _refrescarTela);
+    final _ColaboradorMontadoDataSource colaboradorMontadoDataSource =
+        _ColaboradorMontadoDataSource(listaSubLocal, context, _refrescarTela);
 
     // ignore: no_leading_underscores_for_local_identifiers
-    void _sort<T>(Comparable<T>? Function(Permissao permissao) getField,
-        int columnIndex, bool ascending) {
-      permissaoDataSource._sort<T>(getField, ascending);
+    void _sort<T>(
+        Comparable<T>? Function(ColaboradorMontado subLocalMontado) getField,
+        int columnIndex,
+        bool ascending) {
+      colaboradorMontadoDataSource._sort<T>(getField, ascending);
       setState(() {
         _sortColumnIndex = columnIndex;
         _sortAscending = ascending;
@@ -91,13 +95,13 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
       actions: _actionMap,
       shortcuts: _shortcutMap,
       child: Focus(
-        key: const Key('permissaoLista'),
+        key: const Key('colaboradorLista'),
         autofocus: true,
         child: Scaffold(
           drawerDragStartBehavior: DragStartBehavior.down,
           key: _scaffoldKey,
           appBar: AppBar(
-            title: const Text('Cadastro - Permissão'),
+            title: const Text('Cadastro - Colaborador'),
             centerTitle: telaPequena! ? true : false,
             actions: const <Widget>[],
             flexibleSpace: Container(
@@ -106,6 +110,15 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
               ),
             ),
           ),
+          floatingActionButton: FloatingActionButton(
+              focusColor: ViewUtilLib.getBotaoFocusColor(),
+              tooltip: Constantes.botaoInserirDica,
+              backgroundColor: ViewUtilLib.getBackgroundColorBotaoInserir(),
+              child: ViewUtilLib.getIconBotaoInserir(),
+              onPressed: () {
+                _inserir();
+              }),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           bottomNavigationBar: BottomAppBar(
             color: ViewUtilLib.getBottomAppBarColor(),
             shape: const CircularNotchedRectangle(),
@@ -121,7 +134,7 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
             onRefresh: _refrescarTela,
             child: Scrollbar(
               controller: controllerScroll,
-              child: listaPermissao == null
+              child: listaSubLocal == null
                   ? const Center(child: CircularProgressIndicator())
                   : ListView(
                       controller: controllerScroll,
@@ -129,7 +142,7 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
                           Constantes.paddingListViewListaPage),
                       children: <Widget>[
                         PaginatedDataTable(
-                          header: const Text('Relação - Permissao do usuário'),
+                          header: const Text('Relação - Colaborador'),
                           rowsPerPage: _rowsPerPage!,
                           onRowsPerPageChanged: (int? value) {
                             setState(() {
@@ -139,7 +152,7 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
                           sortColumnIndex: _sortColumnIndex,
                           sortAscending: _sortAscending,
                           columns: _pegarColunas(_sort),
-                          source: permissaoDataSource,
+                          source: colaboradorMontadoDataSource,
                         ),
                       ],
                     ),
@@ -157,10 +170,54 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
           label: const Text('Nome'),
           tooltip: 'Conteúdo para o campo nome',
           onSort: (int columnIndex, bool ascending) => sort<String>(
-              (Permissao obj) => obj.nome, columnIndex, ascending)),
+              (ColaboradorMontado grupo) => grupo.colaborador!.nome,
+              columnIndex,
+              ascending)),
     );
-
+    colunas.add(
+      DataColumn(
+          label: const Text('Sexo'),
+          tooltip: 'Sexo',
+          onSort: (int columnIndex, bool ascending) => sort<String>(
+              (ColaboradorMontado genero) => genero.sexo!.nome,
+              columnIndex,
+              ascending)),
+    );
+    colunas.add(
+      DataColumn(
+          label: const Text('Estado civil'),
+          tooltip: 'Estado civil',
+          onSort: (int columnIndex, bool ascending) => sort<String>(
+              (ColaboradorMontado estCivil) => estCivil.estadoCivil!.nome,
+              columnIndex,
+              ascending)),
+    );
+    colunas.add(
+      DataColumn(
+          label: const Text('Admissão'),
+          tooltip: 'Admissão',
+          onSort: (int columnIndex, bool ascending) => sort<String>(
+              (ColaboradorMontado estCivil) => estCivil.estadoCivil!.nome,
+              columnIndex,
+              ascending)),
+    );
     return colunas;
+  }
+
+  void _inserir() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(
+            builder: (BuildContext context) => ColaboradorPersistePage(
+                montado: ColaboradorMontado(
+                  sexo: Sexo(),
+                  estadoCivil: EstadoCivil(),
+                  colaborador: Colaborador(),
+                ),
+                title: 'Colaborador - Inserindo',
+                operacao: 'I')))
+        .then((_) async {
+      await _refrescarTela();
+    });
   }
 
   void _chamarFiltro() async {
@@ -168,7 +225,7 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
         context,
         MaterialPageRoute(
           builder: (BuildContext context) => FiltroPage(
-            title: 'Categoria - Filtro',
+            title: 'Colaborador - Filtro',
             colunas: _colunas,
             filtroPadrao: true,
           ),
@@ -177,8 +234,8 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
     if (_filtro != null) {
       if (_filtro!.campo != null) {
         _filtro!.campo = _campos[int.parse(_filtro!.campo!)];
-        await Sessao.db.permissaoDao
-            .consultarListaFiltro(_filtro!.campo!, _filtro!.valor!);
+        await Sessao.db.colaboradorDao.consultarListaMontado(
+            campo: _filtro!.campo, valor: _filtro!.valor);
         setState(() {});
       }
     }
@@ -190,24 +247,26 @@ class PermissaoListaPageState extends State<PermissaoListaPage> {
   }
 
   Future _refrescarTela() async {
-    await Sessao.db.permissaoDao.consultarLista();
+    await Sessao.db.colaboradorDao.consultarListaMontado();
     setState(() {});
   }
 }
 
 /// codigo referente a fonte de dados
-class _PermissaoDataSource extends DataTableSource {
-  final List<Permissao>? listaPermissao;
+class _ColaboradorMontadoDataSource extends DataTableSource {
+  final List<ColaboradorMontado>? listaMontado;
   final BuildContext context;
   final Function refrescarTela;
 
-  _PermissaoDataSource(this.listaPermissao, this.context, this.refrescarTela);
+  _ColaboradorMontadoDataSource(
+      this.listaMontado, this.context, this.refrescarTela);
 
   void _sort<T>(
-      Comparable<T>? Function(Permissao permissao) getField, bool ascending) {
-    listaPermissao!.sort((Permissao a, Permissao b) {
+      Comparable<T>? Function(ColaboradorMontado subLocalMontado) getField,
+      bool ascending) {
+    listaMontado!.sort((ColaboradorMontado a, ColaboradorMontado b) {
       if (!ascending) {
-        final Permissao c = a;
+        final ColaboradorMontado c = a;
         a = b;
         b = c;
       }
@@ -226,22 +285,50 @@ class _PermissaoDataSource extends DataTableSource {
   @override
   DataRow? getRow(int index) {
     assert(index >= 0);
-    if (index >= listaPermissao!.length) return null;
-    final Permissao permissao = listaPermissao![index];
+    if (index >= listaMontado!.length) return null;
+    final ColaboradorMontado montado = listaMontado![index];
     return DataRow.byIndex(
       index: index,
       cells: <DataCell>[
-        DataCell(Text(permissao.nome ?? '')),
+        DataCell(Text(montado.colaborador?.nome ?? ''), onTap: () {
+          _detalharMontado(montado, context, refrescarTela);
+        }),
+        DataCell(Text(montado.sexo?.nome ?? ''), onTap: () {
+          _detalharMontado(montado, context, refrescarTela);
+        }),
+        DataCell(Text(montado.estadoCivil?.nome ?? ''), onTap: () {
+          _detalharMontado(montado, context, refrescarTela);
+        }),
+        DataCell(
+            Text(montado.colaborador?.dataAdmissao != null
+                ? DateFormat('dd/MM/yyyy')
+                    .format(montado.colaborador!.dataAdmissao!)
+                : ''), onTap: () {
+          _detalharMontado(montado, context, refrescarTela);
+        }),
       ],
     );
   }
 
   @override
-  int get rowCount => listaPermissao!.length;
+  int get rowCount => listaMontado!.length;
 
   @override
   bool get isRowCountApproximate => false;
 
   @override
   int get selectedRowCount => _selectedCount;
+}
+
+void _detalharMontado(
+    ColaboradorMontado montado, BuildContext context, Function refrescarTela) {
+  Navigator.of(context)
+      .push(MaterialPageRoute(
+          builder: (BuildContext context) => ColaboradorPersistePage(
+              montado: montado,
+              title: 'Colaborador - Editando',
+              operacao: 'A')))
+      .then((_) async {
+    await refrescarTela();
+  });
 }
